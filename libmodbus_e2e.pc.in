@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: modbus_e2e
+Description: modbus_e2e library
+Version: @VERSION@
+Libs: -L${libdir} -lmodbus_e2e
+Cflags: -I${includedir}/modbus_e2e

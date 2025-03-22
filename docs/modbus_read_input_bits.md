@@ -33,3 +33,11 @@ successful. Otherwise it shall return -1 and set errno.
 ## See also
 
 - [modbus_read_input_registers](modbus_read_input_registers.md)
+- [modbus_read_input_registers2](modbus_read_input_registers2.md)
+
+## Copyright
+
+This page is modified by End 2 End Technologies, Inc.
+
+Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
+Copyright (c) End 2 End Technologies, Inc., 2025.

@@ -1,5 +1,6 @@
 /*
  * Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com>
+ * Copyright © End 2 End Technologies, Inc., 2025.
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -27,9 +28,9 @@
 #define MSG_LENGTH_UNDEFINED -1
 
 /* Exported version */
-const unsigned int libmodbus_version_major = LIBMODBUS_VERSION_MAJOR;
-const unsigned int libmodbus_version_minor = LIBMODBUS_VERSION_MINOR;
-const unsigned int libmodbus_version_micro = LIBMODBUS_VERSION_MICRO;
+const unsigned int libmodbus_version_major = LIBMODBUS_E2E_VERSION_MAJOR;
+const unsigned int libmodbus_version_minor = LIBMODBUS_E2E_VERSION_MINOR;
+const unsigned int libmodbus_version_micro = LIBMODBUS_E2E_VERSION_MICRO;
 
 /* Max between RTU and TCP max adu length (so TCP) */
 #define MAX_MESSAGE_LENGTH 260
@@ -1063,9 +1064,9 @@ int modbus_reply(modbus_t *ctx,
         rsp[rsp_length++] = _REPORT_SLAVE_ID;
         /* Run indicator status to ON */
         rsp[rsp_length++] = 0xFF;
-        /* LMB + length of LIBMODBUS_VERSION_STRING */
-        str_len = 3 + strlen(LIBMODBUS_VERSION_STRING);
-        memcpy(rsp + rsp_length, "LMB" LIBMODBUS_VERSION_STRING, str_len);
+        /* LME + length of LIBMODBUS_E2E_ERSION_STRING */
+        str_len = 3 + strlen(LIBMODBUS_E2E_VERSION_STRING);
+        memcpy(rsp + rsp_length, "LME" LIBMODBUS_E2E_VERSION_STRING, str_len);
         rsp_length += str_len;
         rsp[byte_count_pos] = rsp_length - byte_count_pos - 1;
     } break;
@@ -1328,7 +1329,8 @@ int modbus_read_input_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest)
 }
 
 /* Reads the data from a remote device and put that data into an array */
-static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_t *dest)
+static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_t *dest,
+                          bool from_start, bool swap_bytes)
 {
     int rc;
     int req_length;
@@ -1363,9 +1365,19 @@ static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_
 
         offset = ctx->backend->header_length;
 
-        for (i = 0; i < rc; i++) {
-            /* shift reg hi_byte to temp OR with lo_byte */
-            dest[i] = (rsp[offset + 2 + (i << 1)] << 8) | rsp[offset + 3 + (i << 1)];
+        if (from_start) {
+            ++rc; 
+        } else {
+            offset += 2;
+        }
+
+        if (swap_bytes) {
+            for (i = 0; i < rc; i++) {
+                /* shift reg lo_byte to temp OR with hi_byte */
+                dest[i] = (rsp[offset + (i << 1)] << 8) | rsp[offset + (i << 1) + 1];
+            }
+        } else {
+            memcpy(dest, &rsp[offset], rc * 2);
         }
     }
 
@@ -1374,10 +1386,16 @@ static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_
 
 /* Reads the holding registers of remote device and put the data into an
    array */
-int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
+   int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
 {
-    int status;
+    return modbus_read_registers2(ctx, addr, nb, dest, false, true);
+}
 
+/* Reads the holding registers of remote device and put the data into an
+   array */
+int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
+                           bool from_start, bool swap_bytes)
+{
     if (ctx == NULL) {
         errno = EINVAL;
         return -1;
@@ -1394,15 +1412,19 @@ int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
         return -1;
     }
 
-    status = read_registers(ctx, MODBUS_FC_READ_HOLDING_REGISTERS, addr, nb, dest);
-    return status;
+    return read_registers(ctx, MODBUS_FC_READ_HOLDING_REGISTERS, addr, nb, dest, from_start, swap_bytes);
 }
 
 /* Reads the input registers of remote device and put the data into an array */
 int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
 {
-    int status;
+    return modbus_read_input_registers2(ctx, addr, nb, dest, false, true);
+}
 
+/* Reads the input registers of remote device and put the data into an array */
+int modbus_read_input_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
+                                 bool from_start, bool swap_bytes)
+{
     if (ctx == NULL) {
         errno = EINVAL;
         return -1;
@@ -1419,9 +1441,7 @@ int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
         return -1;
     }
 
-    status = read_registers(ctx, MODBUS_FC_READ_INPUT_REGISTERS, addr, nb, dest);
-
-    return status;
+    return read_registers(ctx, MODBUS_FC_READ_INPUT_REGISTERS, addr, nb, dest, from_start, swap_bytes);
 }
 
 /* Write a value to the specified register of the remote device.
@@ -1635,7 +1655,21 @@ int modbus_write_and_read_registers(modbus_t *ctx,
                                     int read_addr,
                                     int read_nb,
                                     uint16_t *dest)
+{
+    return modbus_write_and_read_registers2(ctx, write_addr, write_nb, src, read_addr, read_nb, dest, false, true);
+}
 
+/* Write multiple registers from src array to remote device and read multiple
+   registers from remote device to dest array. */
+int modbus_write_and_read_registers2(modbus_t *ctx,
+                                    int write_addr,
+                                    int write_nb,
+                                    const uint16_t *src,
+                                    int read_addr,
+                                    int read_nb,
+                                    uint16_t *dest,
+                                    bool read_from_start,
+                                    bool read_swap_bytes)
 {
     int rc;
     int req_length;
@@ -1698,9 +1732,20 @@ int modbus_write_and_read_registers(modbus_t *ctx,
             return -1;
 
         offset = ctx->backend->header_length;
-        for (i = 0; i < rc; i++) {
-            /* shift reg hi_byte to temp OR with lo_byte */
-            dest[i] = (rsp[offset + 2 + (i << 1)] << 8) | rsp[offset + 3 + (i << 1)];
+
+        if (read_from_start) {
+            ++rc; 
+        } else {
+            offset += 2;
+        }
+
+        if (read_swap_bytes) {
+            for (i = 0; i < rc; i++) {
+                /* shift reg lo_byte to temp OR with hi_byte */
+                dest[i] = (rsp[offset + (i << 1)] << 8) | rsp[offset + (i << 1) + 1];
+            }
+        } else {
+            memcpy(dest, &rsp[offset], rc * 2);
         }
     }
 

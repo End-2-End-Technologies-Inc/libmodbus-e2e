@@ -1,5 +1,6 @@
 /*
  * Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com>
+ * Copyright © End 2 End Technologies, Inc., 2025.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -60,7 +61,7 @@ int equal_dword(uint16_t *tab_reg, const uint32_t value)
 int main(int argc, char *argv[])
 {
     /* Length of report slave ID response slave ID + ON/OFF + 'LMB' + version */
-    const int NB_REPORT_SLAVE_ID = 2 + 3 + strlen(LIBMODBUS_VERSION_STRING);
+    const int NB_REPORT_SLAVE_ID = 2 + 3 + strlen(LIBMODBUS_E2E_VERSION_STRING);
     uint8_t *tab_rp_bits = NULL;
     uint16_t *tab_rp_registers = NULL;
     uint16_t *tab_rp_registers_bad = NULL;

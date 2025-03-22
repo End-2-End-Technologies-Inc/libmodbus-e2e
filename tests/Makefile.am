@@ -1,3 +1,6 @@
+# Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
+# Copyright © End 2 End Technologies, Inc., 2025.
+
 EXTRA_DIST = README.md unit-tests.sh LICENSE
 
 noinst_PROGRAMS = \
@@ -11,7 +14,7 @@ noinst_PROGRAMS = \
 	version
 
 common_ldflags = \
-	$(top_builddir)/src/libmodbus.la
+	$(top_builddir)/src/libmodbus_e2e.la
 
 bandwidth_server_one_SOURCES = bandwidth-server-one.c
 bandwidth_server_one_LDADD = $(common_ldflags)

@@ -1,4 +1,7 @@
-site_name: libmodbus
+# Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
+# Copyright © End 2 End Technologies, Inc., 2025.
+
+site_name: libmodbus_e2e
 
 theme:
     name: material

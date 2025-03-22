@@ -1,3 +1,6 @@
+// Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
+// Copyright © End 2 End Technologies, Inc., 2025.
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include "config.h"
@@ -7,8 +10,8 @@
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION LIBMODBUS_VERSION_MAJOR, LIBMODBUS_VERSION_MINOR, LIBMODBUS_VERSION_MICRO, 2
-PRODUCTVERSION LIBMODBUS_VERSION_MAJOR, LIBMODBUS_VERSION_MINOR, LIBMODBUS_VERSION_MICRO, 2
+FILEVERSION LIBMODBUS_E2E_VERSION_MAJOR, LIBMODBUS_E2E_VERSION_MINOR, LIBMODBUS_E2E_VERSION_MICRO, 2
+PRODUCTVERSION LIBMODBUS_E2E_VERSION_MAJOR, LIBMODBUS_E2E_VERSION_MINOR, LIBMODBUS_E2E_VERSION_MICRO, 2
 #if defined(DEBUG) || defined(W32DEBUG)
  FILEFLAGS 0x1L
 #else
@@ -22,7 +25,7 @@ FILETYPE VFT_DLL
   BLOCK "000004E4"
   {
    VALUE "CompanyName", "\x0"
-   VALUE "FileDescription", "libmodbus DLL\x0"
+   VALUE "FileDescription", "libmodbus_e2e DLL\x0"
 #if defined(__MINGW32__) && !defined(__MINGW64__)
    VALUE "FileVersion", VERSTRING " (gcc)"
 #endif
@@ -36,10 +39,10 @@ FILETYPE VFT_DLL
    VALUE "FileVersion", VERSTRING " (cl)"
 # endif
 #endif
-   VALUE "InternalName", "modbus.dll"
-   VALUE "LegalCopyright", "� See libmodbus.org"
-   VALUE "OriginalFilename", "modbus.dll"
-   VALUE "ProductName", "libmodbus"
+   VALUE "InternalName", "modbus_e2e.dll"
+   VALUE "LegalCopyright", "� See libmodbus.org, See e2etechinc.com"
+   VALUE "OriginalFilename", "modbus_e2e.dll"
+   VALUE "ProductName", "libmodbus_e2e"
   }
  }
  BLOCK "VarFileInfo"
@@ -51,5 +54,5 @@ FILETYPE VFT_DLL
 // Manifest
 #if (_MSC_VER >= 1400)
 // CAVEAT: the manifest has a version string THAT MUST MATCH the DLL version
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "modbus.dll.manifest"
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "modbus_e2e.dll.manifest"
 #endif

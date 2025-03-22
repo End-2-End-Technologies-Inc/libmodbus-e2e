@@ -27,13 +27,13 @@ Makefile.in
 /configure.scan
 /depcomp
 /install-sh
-/libmodbus.pc
+/libmodbus_e2e.pc
 /libtool
 /ltmain.sh
 /missing
 /stamp-h1
 src/modbus-version.h
-src/win32/modbus.dll.manifest
+src/win32/modbus_e2e.dll.manifest
 tests/unit-test.h
 
 # mkdocs

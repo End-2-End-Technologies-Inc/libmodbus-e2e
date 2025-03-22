@@ -26,3 +26,11 @@ successful. Otherwise it shall return -1 and set errno.
 
 - [modbus_write_register](modbus_write_register.md)
 - [modbus_read_registers](modbus_read_registers.md)
+- [modbus_read_registers2](modbus_read_registers2.md)
+
+## Copyright
+
+This page is modified by End 2 End Technologies, Inc.
+
+Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
+Copyright (c) End 2 End Technologies, Inc., 2025.

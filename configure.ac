@@ -1,31 +1,35 @@
-# libmodbus package version number, (as distinct from shared library version)
+# Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
+# Copyright © End 2 End Technologies, Inc., 2025.
+
+# libmodbus_e2e package version number, (as distinct from shared library version)
 # An odd micro number indicates in-progress development from Git
 # An even micro number indicates a released version
 #
 # Making a point release:
-# - increase libmodbus_version_micro to the next even number
+# - increase libmodbus_e2e_version_micro to the next even number
 #
 # After the release:
-# - increase libmodbus_version_minor to the next odd number
+# - increase libmodbus_e2e_version_minor to the next odd number
 #
-# Take care to update the libtool versioning when required (LIBMODBUS_LD_*).
+# Take care to update the libtool versioning when required (LIBMODBUS_E2E_LD_*).
 # http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 #
-m4_define([libmodbus_version_major], [3])
-m4_define([libmodbus_version_minor], [1])
-m4_define([libmodbus_version_micro], [11])
+
+m4_define([libmodbus_e2e_version_major], [3])
+m4_define([libmodbus_e2e_version_minor], [2])
+m4_define([libmodbus_e2e_version_micro], [0])
 
 m4_define([libmodbus_release_status],
-    [m4_if(m4_eval(libmodbus_version_minor % 2), [1], [snapshot], [release])])
+    [m4_if(m4_eval(libmodbus_e2e_version_minor % 2), [1], [snapshot], [release])])
 
-m4_define([libmodbus_version],
-    [libmodbus_version_major.libmodbus_version_minor.libmodbus_version_micro])
+m4_define([libmodbus_e2e_version],
+    [libmodbus_e2e_version_major.libmodbus_e2e_version_minor.libmodbus_e2e_version_micro])
 
 AC_PREREQ([2.63])
-AC_INIT([libmodbus],
-        [libmodbus_version],
-        [https://github.com/stephane/libmodbus/issues],
-        [libmodbus],
+AC_INIT([libmodbus_e2e],
+        [libmodbus_e2e_version],
+        [https://github.com/End-2-End-Technologies-Inc/libmodbus_e2e/issues],
+        [libmodbus_e2e],
         [http://libmodbus.org/])
 AC_CONFIG_SRCDIR([src/modbus.c])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -36,22 +40,22 @@ AC_SYS_LARGEFILE
 AC_CONFIG_MACRO_DIR([m4])
 AM_SILENT_RULES([yes])
 
-LIBMODBUS_VERSION_MAJOR=libmodbus_version_major
-LIBMODBUS_VERSION_MINOR=libmodbus_version_minor
-LIBMODBUS_VERSION_MICRO=libmodbus_version_micro
-LIBMODBUS_VERSION=libmodbus_version
-AC_SUBST(LIBMODBUS_VERSION_MAJOR)
-AC_SUBST(LIBMODBUS_VERSION_MINOR)
-AC_SUBST(LIBMODBUS_VERSION_MICRO)
-AC_SUBST(LIBMODBUS_VERSION)
+LIBMODBUS_E2E_VERSION_MAJOR=libmodbus_e2e_version_major
+LIBMODBUS_E2E_VERSION_MINOR=libmodbus_e2e_version_minor
+LIBMODBUS_E2E_VERSION_MICRO=libmodbus_e2e_version_micro
+LIBMODBUS_E2E_VERSION=libmodbus_e2e_version
+AC_SUBST(LIBMODBUS_E2E_VERSION_MAJOR)
+AC_SUBST(LIBMODBUS_E2E_VERSION_MINOR)
+AC_SUBST(LIBMODBUS_E2E_VERSION_MICRO)
+AC_SUBST(LIBMODBUS_E2E_VERSION)
 
 # ABI version
 # http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-LIBMODBUS_LD_CURRENT=6
-LIBMODBUS_LD_REVISION=0
-LIBMODBUS_LD_AGE=1
-LIBMODBUS_LT_VERSION_INFO=$LIBMODBUS_LD_CURRENT:$LIBMODBUS_LD_REVISION:$LIBMODBUS_LD_AGE
-AC_SUBST(LIBMODBUS_LT_VERSION_INFO)
+LIBMODBUS_E2E_LD_CURRENT=7
+LIBMODBUS_E2E_LD_REVISION=0
+LIBMODBUS_E2E_LD_AGE=0
+LIBMODBUS_E2E_LT_VERSION_INFO=$LIBMODBUS_E2E_LD_CURRENT:$LIBMODBUS_E2E_LD_REVISION:$LIBMODBUS_E2E_LD_AGE
+AC_SUBST(LIBMODBUS_E2E_LT_VERSION_INFO)
 
 AC_CANONICAL_HOST
 
@@ -167,9 +171,9 @@ AC_CONFIG_FILES([
         Makefile
         src/Makefile
         src/modbus-version.h
-        src/win32/modbus.dll.manifest
+        src/win32/modbus_e2e.dll.manifest
         tests/Makefile
-        libmodbus.pc
+        libmodbus_e2e.pc
 ])
 
 AC_ARG_ENABLE([debug],

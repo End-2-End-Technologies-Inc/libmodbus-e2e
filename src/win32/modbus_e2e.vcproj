@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="modbus"
+	Name="modbus_e2e"
 	ProjectGUID="{498E0845-C7F4-438B-8EDE-EF7FC9A74430}"
-	RootNamespace="modbus"
+	RootNamespace="modbus_e2e"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -70,7 +70,7 @@
 			<Tool
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_MSC_VER"
-				ResourceOutputFileName="$(SolutionDir)/modbus.res"
+				ResourceOutputFileName="$(SolutionDir)/modbus_e2e.res"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -447,7 +447,7 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\modbus.rc"
+				RelativePath=".\modbus_e2e.rc"
 				>
 			</File>
 		</Filter>

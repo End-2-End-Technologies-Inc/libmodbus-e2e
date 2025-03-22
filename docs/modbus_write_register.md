@@ -25,4 +25,12 @@ errno.
 ## See also
 
 - [modbus_read_registers](modbus_read_registers.md)
+- [modbus_read_registers2](modbus_read_registers2.md)
 - [modbus_write_registers](modbus_write_registers.md)
+
+## Copyright
+
+This page is modified by End 2 End Technologies, Inc.
+
+Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
+Copyright (c) End 2 End Technologies, Inc., 2025.

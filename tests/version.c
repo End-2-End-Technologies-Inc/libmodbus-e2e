@@ -1,5 +1,6 @@
 /*
  * Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com>
+ * Copyright © End 2 End Technologies, Inc., 2025.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,10 +10,10 @@
 
 int main(void)
 {
-    printf("Compiled with libmodbus version %s (%06X)\n",
-           LIBMODBUS_VERSION_STRING,
-           LIBMODBUS_VERSION_HEX);
-    printf("Linked with libmodbus version %d.%d.%d\n",
+    printf("Compiled with libmodbus_e2e version %s (%06X)\n",
+           LIBMODBUS_E2E_VERSION_STRING,
+           LIBMODBUS_E2E_VERSION_HEX);
+    printf("Linked with libmodbus_e2e version %d.%d.%d\n",
            libmodbus_version_major,
            libmodbus_version_minor,
            libmodbus_version_micro);

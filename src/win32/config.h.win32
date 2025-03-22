@@ -122,25 +122,25 @@
 /* #undef LT_OBJDIR */
 
 /* Name of package */
-#define PACKAGE "libmodbus"
+#define PACKAGE "libmodbus_e2e"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "https://github.com/stephane/libmodbus/issues"
+#define PACKAGE_BUGREPORT "https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e/issues"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "libmodbus"
+#define PACKAGE_NAME "libmodbus_e2e"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libmodbus @LIBMODBUS_VERSION@"
+#define PACKAGE_STRING "libmodbus_e2e @LIBMODBUS_E2E_VERSION@"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "libmodbus"
+#define PACKAGE_TARNAME "libmodbus_e2e"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "@LIBMODBUS_VERSION@"
+#define PACKAGE_VERSION "@LIBMODBUS_E2E_VERSION@"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -149,7 +149,7 @@
 /* #undef TIME_WITH_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "@LIBMODBUS_VERSION@"
+#define VERSION "@LIBMODBUS_E2E_VERSION@"
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */

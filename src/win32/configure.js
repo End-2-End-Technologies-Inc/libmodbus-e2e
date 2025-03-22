@@ -1,15 +1,18 @@
-/* Configure script for modbus.dll, specific for Windows with Scripting Host.
+/* Configure script for modbus_e2e.dll, specific for Windows with Scripting Host.
  *
  * Inspired by configure.js from libxml2
  *
  * oldfaber  < oldfaber _at_ gmail _dot_ com >
+ *
+ * Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
+ * Copyright © End 2 End Technologies, Inc., 2025.
  *
  */
 
 /* The source directory, relative to the one where this file resides. */
 var srcDir = "..";
 /* Base name of what we are building. */
-var baseName = "modbus";
+var baseName = "modbus_e2e";
 /* Configure file template and output file */
 var configFile = srcDir + "\\..\\configure.ac";
 /* Input and output files for the modbus-version.h include */
@@ -38,7 +41,7 @@ function usage() {
         "Options can be specified in the form <option>=<value>, where the value is\n";
     txt += "either 'yes' or 'no', if not stated otherwise.\n\n";
     txt +=
-        "\nModbus library configure options, default value given in parentheses:\n\n";
+        "\nModbus_e2e library configure options, default value given in parentheses:\n\n";
     txt +=
         "  dry-run:  Run configure without creating files (" +
         (dryRun ? "yes" : "no") +
@@ -56,11 +59,11 @@ function readVersion() {
     while (cf.AtEndOfStream !== true) {
         ln = cf.ReadLine();
         s = new String(ln);
-        if (s.search(/^m4_define\(\[libmodbus_version_major/) != -1) {
+        if (s.search(/^m4_define\(\[libmodbus_e2e_version_major/) != -1) {
             verMajor = s.substr(s.indexOf(",") + 3, 1);
-        } else if (s.search(/^m4_define\(\[libmodbus_version_minor/) != -1) {
+        } else if (s.search(/^m4_define\(\[libmodbus_e2e_version_minor/) != -1) {
             verMinor = s.substr(s.indexOf(",") + 3, 1);
-        } else if (s.search(/^m4_define\(\[libmodbus_version_micro/) != -1) {
+        } else if (s.search(/^m4_define\(\[libmodbus_e2e_version_micro/) != -1) {
 			str_start_idx = s.indexOf(",") + 3;
 			num_str_length = s.length - str_start_idx - 2;
             verMicro = s.substr(str_start_idx, num_str_length);
@@ -80,16 +83,16 @@ function createVersionedFile(newfile, unversioned) {
     while (ofi.AtEndOfStream !== true) {
         ln = ofi.ReadLine();
         s = new String(ln);
-        if (!dryRun && s.search(/\@LIBMODBUS_VERSION_MAJOR\@/) != -1) {
-            of.WriteLine(s.replace(/\@LIBMODBUS_VERSION_MAJOR\@/, verMajor));
-        } else if (!dryRun && s.search(/\@LIBMODBUS_VERSION_MINOR\@/) != -1) {
-            of.WriteLine(s.replace(/\@LIBMODBUS_VERSION_MINOR\@/, verMinor));
-        } else if (!dryRun && s.search(/\@LIBMODBUS_VERSION_MICRO\@/) != -1) {
-            of.WriteLine(s.replace(/\@LIBMODBUS_VERSION_MICRO\@/, verMicro));
-        } else if (!dryRun && s.search(/\@LIBMODBUS_VERSION\@/) != -1) {
+        if (!dryRun && s.search(/\@LIBMODBUS_E2E_VERSION_MAJOR\@/) != -1) {
+            of.WriteLine(s.replace(/\@LIBMODBUS_E2E_VERSION_MAJOR\@/, verMajor));
+        } else if (!dryRun && s.search(/\@LIBMODBUS_E2E_VERSION_MINOR\@/) != -1) {
+            of.WriteLine(s.replace(/\@LIBMODBUS_E2E_VERSION_MINOR\@/, verMinor));
+        } else if (!dryRun && s.search(/\@LIBMODBUS_E2E_VERSION_MICRO\@/) != -1) {
+            of.WriteLine(s.replace(/\@LIBMODBUS_E2E_VERSION_MICRO\@/, verMicro));
+        } else if (!dryRun && s.search(/\@LIBMODBUS_E2E_VERSION\@/) != -1) {
             of.WriteLine(
                 s.replace(
-                    /\@LIBMODBUS_VERSION\@/,
+                    /\@LIBMODBUS_E2E_VERSION\@/,
                     verMajor + "." + verMinor + "." + verMicro
                 )
             );
@@ -157,8 +160,8 @@ if (error !== 0) {
 }
 WScript.Echo(newfile + " created.");
 
-newfile = "modbus.dll.manifest";
-createVersionedFile(newfile, "modbus.dll.manifest.in");
+newfile = "modbus_e2e.dll.manifest";
+createVersionedFile(newfile, "modbus_e2e.dll.manifest.in");
 if (error !== 0) {
     WScript.Echo("Creation of " + newfile + " failed, aborting.");
     WScript.Quit(error);
@@ -173,4 +176,4 @@ if (error !== 0) {
 }
 WScript.Echo(newfile + " created.");
 
-WScript.Echo("\nLibmodbus configuration completed\n");
+WScript.Echo("\nlibmodbus_e2e configuration completed\n");

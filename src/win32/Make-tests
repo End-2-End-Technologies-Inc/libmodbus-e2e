@@ -8,9 +8,9 @@
 #       before using this Makefile
 # --
 # Compile and link the bandwidth and random tests.
-# Build modbus.dll and the import library before building the tests
-# modbus.lib/libmodbus.a (the import library) should be in this directory
-# modbus.dll should be in this directory or in path
+# Build modbus_e2e.dll and the import library before building the tests
+# modbus_e2e.lib/libmodbus_e2e.a (the import library) should be in this directory
+# modbus_e2e.dll should be in this directory or in path
 
 INCLUDES:=-I../.. -I.. -I.
 
@@ -18,14 +18,14 @@ ifeq ($(CC),cl)
 DEFS+=-D_CRT_SECURE_NO_DEPRECATE=1 -D_CRT_NONSTDC_NO_DEPRECATE=1
 CFLAGS=-Zi -W3 -MT -ID:/include/msvc_std
 LDOPTS=-link -incremental:NO 
-LDLIBS=-Fe$@ ws2_32.lib modbus.lib $(LDOPTS)
+LDLIBS=-Fe$@ ws2_32.lib modbus_e2e.lib $(LDOPTS)
 RES:=res
 RCOUT=
 endif
 
 ifeq ($(CC),gcc)
 CFLAGS=-g -Wall -O -static -static-libgcc
-LDLIBS=-o$@ -lws2_32 -luser32 -L. -lmodbus
+LDLIBS=-o$@ -lws2_32 -luser32 -L. -lmodbus_e2e
 LDOPTS=
 RES:=o
 RCOUT=-o$@

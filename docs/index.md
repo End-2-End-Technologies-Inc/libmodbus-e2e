@@ -38,7 +38,7 @@ The library can be used to write a:
 ## Contexts
 
 The Modbus protocol supports several transport protocols (eg. serial RTU,
-Ethernet TCP) called backends in *libmodbus*.
+Ethernet TCP) called backends in *libmodbus_e2e*.
 
 The first step is to allocate and set a `modbus_t` context according to the
 required backend (RTU or TCP) with a dedicated function, such as
@@ -140,7 +140,9 @@ To read data:
 - [modbus_read_bits](modbus_read_bits.md)
 - [modbus_read_input_bits](modbus_read_input_bits.md)
 - [modbus_read_registers](modbus_read_registers.md)
+- [modbus_read_registers2](modbus_read_registers2.md)
 - [modbus_read_input_registers](modbus_read_input_registers.md)
+- [modbus_read_input_registers2](modbus_read_input_registers2.md)
 - [modbus_report_slave_id](modbus_report_slave_id.md)
 
 To write data:
@@ -153,6 +155,7 @@ To write data:
 To write and read data in a single operation:
 
 - [modbus_write_and_read_registers](modbus_write_and_read_registers.md)
+- [modbus_write_and_read_registers2](modbus_write_and_read_registers2.md)
 
 To send and receive low-level requests:
 
@@ -272,7 +275,7 @@ To deviate from the Modbus standard, you can enable or disable quirks with:
 - [modbus_disable_quirks](modbus_disable_quirks.md)
 - [modbus_enable_quirks](modbus_enable_quirks.md)
 
-The `_LIBMODBUS_VERSION_STRING_` constant indicates the libmodbus version the
+The `_LIBMODBUS_E2E_VERSION_STRING_` constant indicates the libmodbus version the
 program has been compiled against. The variables 'libmodbus_version_major',
 'libmodbus_version_minor', 'libmodbus_version_micro' give the version the
 program is linked against.
@@ -281,4 +284,11 @@ program is linked against.
 
 Free use of this software is granted under the terms of the GNU Lesser General
 Public License (LGPL v2.1+). For details see the file `COPYING.LESSER` included
-with the libmodbus distribution.
+with the libmodbus_e2e distribution.
+
+## Copyright
+
+This page is modified by End 2 End Technologies, Inc.
+
+Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
+Copyright (c) End 2 End Technologies, Inc., 2025.
