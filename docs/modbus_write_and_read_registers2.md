@@ -11,7 +11,7 @@ int modbus_write_and_read_registers2(
     modbus_t *ctx,
     int write_addr, int write_nb, const uint16_t *src,
     int read_addr, int read_nb, const uint16_t *dest,
-    bool read_from_start, bool read_swap_bytes
+    int read_flags
 );
 ```
 
@@ -23,13 +23,14 @@ the remote device then shall read the content of the `read_nb` holding registers
 to the address `read_addr` of the remote device. The result of reading is stored
 in `dest` array as word values (16 bits).
 
-`read_from_start` controls whether read output should include additional two leading bytes.
+`read_flags` is a bit mask, which controls fine-tuned read behavior:
 
-`read_swap_bytes` controls whether bytes should be swapped in the received 16-bit values.
+- `MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE` - include additional two leading bytes.
+- `MODBUS_READ_REGISTERS_FLAG_SWAP_BYTES` - forcibly swap bytes in the received 16-bit values.
 
 You must take care to allocate enough memory to store the results in `dest`
-(at least `nb * sizeof(uint16_t)` if `read_from_start` is `false`,
-or `(nb + 1) * sizeof(uint16_t)` otherwise).
+(at least `nb * sizeof(uint16_t)` if `MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE`
+is present in `read_flags`, or `(nb + 1) * sizeof(uint16_t)` otherwise).
 
 The function uses the Modbus function code 0x17 (write/read registers).
 

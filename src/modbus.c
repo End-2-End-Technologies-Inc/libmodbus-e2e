@@ -16,7 +16,10 @@
 #include <string.h>
 #include <time.h>
 #ifndef _MSC_VER
+#include <endian.h>
 #include <unistd.h>
+#else
+#include "win32/endian-win32.h"
 #endif
 
 #include <config.h>
@@ -1329,8 +1332,7 @@ int modbus_read_input_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest)
 }
 
 /* Reads the data from a remote device and put that data into an array */
-static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_t *dest,
-                          bool from_start, bool swap_bytes)
+static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_t *dest, int flags)
 {
     int rc;
     int req_length;
@@ -1365,13 +1367,13 @@ static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_
 
         offset = ctx->backend->header_length;
 
-        if (from_start) {
+        if (flags & MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE) {
             ++rc; 
         } else {
             offset += 2;
         }
 
-        if (swap_bytes) {
+        if (flags & MODBUS_READ_REGISTERS_FLAG_SWAP_BYTES) {
             for (i = 0; i < rc; i++) {
                 /* shift reg lo_byte to temp OR with hi_byte */
                 dest[i] = (rsp[offset + (i << 1)] << 8) | rsp[offset + (i << 1) + 1];
@@ -1384,17 +1386,22 @@ static int read_registers(modbus_t *ctx, int function, int addr, int nb, uint16_
     return rc;
 }
 
+#if __BYTE_ORDER == __BIG_ENDIAN
+#define DEFAULT_READ_REGISTERS_FLAGS 0
+#else
+#define DEFAULT_READ_REGISTERS_FLAGS (MODBUS_READ_REGISTERS_FLAG_SWAP_BYTES)
+#endif
+
 /* Reads the holding registers of remote device and put the data into an
    array */
-   int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
+int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
 {
-    return modbus_read_registers2(ctx, addr, nb, dest, false, true);
+    return modbus_read_registers2(ctx, addr, nb, dest, DEFAULT_READ_REGISTERS_FLAGS);
 }
 
 /* Reads the holding registers of remote device and put the data into an
    array */
-int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
-                           bool from_start, bool swap_bytes)
+int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest, int flags)
 {
     if (ctx == NULL) {
         errno = EINVAL;
@@ -1412,18 +1419,17 @@ int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
         return -1;
     }
 
-    return read_registers(ctx, MODBUS_FC_READ_HOLDING_REGISTERS, addr, nb, dest, from_start, swap_bytes);
+    return read_registers(ctx, MODBUS_FC_READ_HOLDING_REGISTERS, addr, nb, dest, flags);
 }
 
 /* Reads the input registers of remote device and put the data into an array */
 int modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest)
 {
-    return modbus_read_input_registers2(ctx, addr, nb, dest, false, true);
+    return modbus_read_input_registers2(ctx, addr, nb, dest, DEFAULT_READ_REGISTERS_FLAGS);
 }
 
 /* Reads the input registers of remote device and put the data into an array */
-int modbus_read_input_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
-                                 bool from_start, bool swap_bytes)
+int modbus_read_input_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest, int flags)
 {
     if (ctx == NULL) {
         errno = EINVAL;
@@ -1441,7 +1447,7 @@ int modbus_read_input_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest
         return -1;
     }
 
-    return read_registers(ctx, MODBUS_FC_READ_INPUT_REGISTERS, addr, nb, dest, from_start, swap_bytes);
+    return read_registers(ctx, MODBUS_FC_READ_INPUT_REGISTERS, addr, nb, dest, flags);
 }
 
 /* Write a value to the specified register of the remote device.
@@ -1656,7 +1662,15 @@ int modbus_write_and_read_registers(modbus_t *ctx,
                                     int read_nb,
                                     uint16_t *dest)
 {
-    return modbus_write_and_read_registers2(ctx, write_addr, write_nb, src, read_addr, read_nb, dest, false, true);
+    return modbus_write_and_read_registers2(
+        ctx,
+        write_addr,
+        write_nb,
+        src,
+        read_addr,
+        read_nb,
+        dest,
+        DEFAULT_READ_REGISTERS_FLAGS);
 }
 
 /* Write multiple registers from src array to remote device and read multiple
@@ -1668,8 +1682,7 @@ int modbus_write_and_read_registers2(modbus_t *ctx,
                                     int read_addr,
                                     int read_nb,
                                     uint16_t *dest,
-                                    bool read_from_start,
-                                    bool read_swap_bytes)
+                                    int read_flags)
 {
     int rc;
     int req_length;
@@ -1733,13 +1746,13 @@ int modbus_write_and_read_registers2(modbus_t *ctx,
 
         offset = ctx->backend->header_length;
 
-        if (read_from_start) {
+        if (read_flags & MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE) {
             ++rc; 
         } else {
             offset += 2;
         }
 
-        if (read_swap_bytes) {
+        if (read_flags & MODBUS_READ_REGISTERS_FLAG_SWAP_BYTES) {
             for (i = 0; i < rc; i++) {
                 /* shift reg lo_byte to temp OR with hi_byte */
                 dest[i] = (rsp[offset + (i << 1)] << 8) | rsp[offset + (i << 1) + 1];

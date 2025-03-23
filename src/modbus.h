@@ -15,10 +15,8 @@
 #endif
 
 #ifndef _MSC_VER
-# include <stdbool.h>
 # include <stdint.h>
 #else
-# include "stdbool.h"
 # include "stdint.h"
 #endif
 
@@ -191,6 +189,9 @@ typedef enum {
     MODBUS_QUIRK_ALL = 0xFF
 } modbus_quirks;
 
+#define MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE 0x01
+#define MODBUS_READ_REGISTERS_FLAG_SWAP_BYTES 0x02
+
 MODBUS_API int modbus_set_slave(modbus_t *ctx, int slave);
 MODBUS_API int modbus_get_slave(modbus_t *ctx);
 MODBUS_API int modbus_set_error_recovery(modbus_t *ctx,
@@ -227,13 +228,11 @@ MODBUS_API const char *modbus_strerror(int errnum);
 MODBUS_API int modbus_read_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 MODBUS_API int modbus_read_input_bits(modbus_t *ctx, int addr, int nb, uint8_t *dest);
 MODBUS_API int modbus_read_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
-MODBUS_API int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
-                                      bool from_start, bool swap_bytes);
+MODBUS_API int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest, int flags);
 MODBUS_API int
 modbus_read_input_registers(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 MODBUS_API int
-modbus_read_input_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
-                             bool from_start, bool swap_bytes);
+modbus_read_input_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest, int flags);
 MODBUS_API int modbus_write_bit(modbus_t *ctx, int coil_addr, int status);
 MODBUS_API int modbus_write_register(modbus_t *ctx, int reg_addr, const uint16_t value);
 MODBUS_API int modbus_write_bits(modbus_t *ctx, int addr, int nb, const uint8_t *data);
@@ -255,8 +254,7 @@ MODBUS_API int modbus_write_and_read_registers2(modbus_t *ctx,
                                                 int read_addr,
                                                 int read_nb,
                                                 uint16_t *dest,
-                                                bool read_from_start,
-                                                bool read_swap_bytes);
+                                                int read_flags);
  MODBUS_API int modbus_report_slave_id(modbus_t *ctx, int max_dest, uint8_t *dest);
 
 MODBUS_API modbus_mapping_t *

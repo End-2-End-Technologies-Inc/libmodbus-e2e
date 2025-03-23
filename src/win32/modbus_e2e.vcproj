@@ -440,6 +440,10 @@
 				RelativePath="..\modbus.h"
 				>
 			</File>
+			<File
+				RelativePath="endian-win32.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

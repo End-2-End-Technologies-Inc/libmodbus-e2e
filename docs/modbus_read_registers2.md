@@ -7,8 +7,7 @@ modbus_read_registers2 - read many registers
 ## Synopsis
 
 ```c
-int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest,
-                           bool from_start, bool swap_bytes);
+int modbus_read_registers2(modbus_t *ctx, int addr, int nb, uint16_t *dest, int flags);
 ```
 
 ## Description
@@ -17,13 +16,14 @@ The *modbus_read_registers2()* function shall read the content of the `nb`
 holding registers to the address `addr` of the remote device. The result of
 reading is stored in `dest` array as word values (16 bits).
 
-`from_start` controls whether read output should include additional two leading bytes.
+`flags` is a bit mask, which controls fine-tuned behavior:
 
-`swap_bytes` controls whether bytes should be swapped in the received 16-bit values.
+- `MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE` - include additional two leading bytes.
+- `MODBUS_READ_REGISTERS_FLAG_SWAP_BYTES` - forcibly swap bytes in the received 16-bit values.
 
 You must take care to allocate enough memory to store the results in `dest`
-(at least `nb * sizeof(uint16_t)` if `from_start` is `false`,
-or `(nb + 1) * sizeof(uint16_t)` otherwise).
+(at least `nb * sizeof(uint16_t)` if `MODBUS_READ_REGISTERS_FLAG_INCLUDE_LEADING_VALUE`
+is present in `flags`, or `(nb + 1) * sizeof(uint16_t)` otherwise).
 
 The function uses the Modbus function code 0x03 (read holding registers).
 
