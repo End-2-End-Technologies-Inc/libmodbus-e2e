@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only 3.2.x are supported.
+Only 1.0.x are supported.
 
 ## Reporting a Vulnerability
 
@@ -13,4 +13,4 @@ To report a vulnerability, you can send a mail to the:
 Once the vulnerability is fixed, new releases will be published and an issue
 will be created to disclose the vulnerability.
 
-The reporter name will be credited (if you wish).
+The reporter name can be credited (if the reporter wishes so).
