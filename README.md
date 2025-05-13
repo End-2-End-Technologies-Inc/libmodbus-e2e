@@ -2,7 +2,7 @@
 
 ## End 2 End Technologies Notice
 
-This is private variant of the `libmodbus` maintained by the End 2 End Technologies, Inc.
+This is private variant of the `libmodbus` maintained by the End 2 End Technologies, LLC.
 for its own purposes. However, in order to comply with conditions of the LGPL license,
 source code of this variant is made public through this repository.
 

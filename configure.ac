@@ -1,5 +1,5 @@
 # Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
-# Copyright © End 2 End Technologies, Inc., 2025.
+# Copyright © End 2 End Technologies, LLC., 2025.
 
 # libmodbus_e2e package version number, (as distinct from shared library version)
 # An odd micro number indicates in-progress development from Git

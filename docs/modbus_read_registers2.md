@@ -73,9 +73,9 @@ modbus_free(ctx);
 
 ## Copyright
 
-This page is added by End 2 End Technologies, Inc.
+This page is added by End 2 End Technologies, LLC.
 
 Most of text on this page is derived from documentation page for the function `modbus_read_registers()`.
 
 Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
-Copyright (c) End 2 End Technologies, Inc., 2025.
+Copyright (c) End 2 End Technologies, LLC., 2025.

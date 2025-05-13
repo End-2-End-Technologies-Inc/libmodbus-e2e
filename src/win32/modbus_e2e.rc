@@ -1,5 +1,5 @@
 // Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
-// Copyright © End 2 End Technologies, Inc., 2025.
+// Copyright © End 2 End Technologies, LLC., 2025.
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

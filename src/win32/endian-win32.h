@@ -1,5 +1,5 @@
 /*
- * Copyright © End 2 End Technologies, Inc., 2025.
+ * Copyright © End 2 End Technologies, LLC., 2025.
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *

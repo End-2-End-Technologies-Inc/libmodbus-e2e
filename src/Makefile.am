@@ -1,5 +1,5 @@
 # Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
-# Copyright © End 2 End Technologies, Inc., 2025.
+# Copyright © End 2 End Technologies, LLC., 2025.
 
 EXTRA_DIST =
 lib_LTLIBRARIES = libmodbus_e2e.la

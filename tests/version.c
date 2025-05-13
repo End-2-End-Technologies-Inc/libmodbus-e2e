@@ -1,6 +1,6 @@
 /*
  * Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com>
- * Copyright © End 2 End Technologies, Inc., 2025.
+ * Copyright © End 2 End Technologies, LLC., 2025.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */

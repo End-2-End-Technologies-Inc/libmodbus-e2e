@@ -5,7 +5,7 @@
  * oldfaber  < oldfaber _at_ gmail _dot_ com >
  *
  * Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
- * Copyright © End 2 End Technologies, Inc., 2025.
+ * Copyright © End 2 End Technologies, LLC., 2025.
  *
  */
 
