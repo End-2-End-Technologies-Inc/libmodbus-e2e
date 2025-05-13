@@ -15,9 +15,9 @@
 # http://www.gnu.org/software/libtool/manual/html_node/Libtool-versioning.html
 #
 
-m4_define([libmodbus_e2e_version_major], [3])
-m4_define([libmodbus_e2e_version_minor], [2])
-m4_define([libmodbus_e2e_version_micro], [0])
+m4_define([libmodbus_e2e_version_major], [1])
+m4_define([libmodbus_e2e_version_minor], [0])
+m4_define([libmodbus_e2e_version_micro], [1])
 
 m4_define([libmodbus_release_status],
     [m4_if(m4_eval(libmodbus_e2e_version_minor % 2), [1], [snapshot], [release])])
