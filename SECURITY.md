@@ -8,7 +8,7 @@ Only 1.0.x are supported.
 
 To report a vulnerability, you can send a mail to the:
 
-- End 2 End Technolgies Supports <support@e2etechinc.com>
+- End 2 End Technologies Supports <support@e2etechinc.com>
 
 Once the vulnerability is fixed, new releases will be published and an issue
 will be created to disclose the vulnerability.
