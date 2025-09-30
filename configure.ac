@@ -183,11 +183,11 @@ AC_ARG_ENABLE([debug],
   [enable_debug=no])
 
 AS_IF([test "x$enable_debug" = "xyes"], [
-  CFLAGS="-g -O0"
-  CXXFLAGS="-g -O0"
+  CFLAGS="$CFLAGS -g -O0"
+  CXXFLAGS="$CXXFLAGS -g -O0"
 ], [
-  CFLAGS="-O2"
-  CXXFLAGS="-O2"
+  CFLAGS="$CFLAGS -O2"
+  CXXFLAGS="$CXXFLAGS -O2"
 ])
 
 AC_OUTPUT
