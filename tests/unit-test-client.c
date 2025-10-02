@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
     /* Single */
     rc = modbus_write_bit(ctx, UT_BITS_ADDRESS, ON);
     printf("1/2 modbus_write_bit: ");
-    ASSERT_TRUE(rc == 1, "");
+    ASSERT_TRUE(rc == 1, "rc==%d, expected 1\n", rc);
 
     rc = modbus_read_bits(ctx, UT_BITS_ADDRESS, 1, tab_rp_bits);
     printf("2/2 modbus_read_bits: ");
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
         modbus_set_bits_from_bytes(tab_value, 0, UT_BITS_NB, UT_BITS_TAB);
         rc = modbus_write_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB, tab_value);
         printf("1/2 modbus_write_bits: ");
-        ASSERT_TRUE(rc == UT_BITS_NB, "");
+        ASSERT_TRUE(rc == UT_BITS_NB, "rc==%d (expected %d)\n", rc, (int)UT_BITS_NB);
     }
 
     rc = modbus_read_bits(ctx, UT_BITS_ADDRESS, UT_BITS_NB, tab_rp_bits);
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
     /* Single register */
     rc = modbus_write_register(ctx, UT_REGISTERS_ADDRESS, 0x1234);
     printf("1/2 modbus_write_register: ");
-    ASSERT_TRUE(rc == 1, "");
+    ASSERT_TRUE(rc == 1, "rc==%d, expected 1\n", rc);
 
     rc = modbus_read_registers(ctx, UT_REGISTERS_ADDRESS, 1, tab_rp_registers);
     printf("2/2 modbus_read_registers: ");
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
     rc = modbus_write_registers(
         ctx, UT_REGISTERS_ADDRESS, UT_REGISTERS_NB, UT_REGISTERS_TAB);
     printf("1/5 modbus_write_registers: ");
-    ASSERT_TRUE(rc == UT_REGISTERS_NB, "");
+    ASSERT_TRUE(rc == UT_REGISTERS_NB, "rc==%d, expected %d\n", rc, (int)UT_REGISTERS_NB);
 
     rc = modbus_read_registers(
         ctx, UT_REGISTERS_ADDRESS, UT_REGISTERS_NB, tab_rp_registers);
@@ -703,7 +703,7 @@ int main(int argc, char *argv[])
         rc = modbus_read_registers(
             ctx, UT_REGISTERS_ADDRESS_BYTE_SLEEP_5_MS, 1, tab_rp_registers);
         printf("2/2 Adapted byte timeout (7ms > 5ms): ");
-        ASSERT_TRUE(rc == 1, "");
+        ASSERT_TRUE(rc == 1, "rc==%d expected 1\n", rc);
     }
 
     /* Restore original byte timeout */

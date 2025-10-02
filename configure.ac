@@ -28,7 +28,7 @@ m4_define([libmodbus_e2e_version],
 AC_PREREQ([2.63])
 AC_INIT([libmodbus_e2e],
         [libmodbus_e2e_version],
-        [https://github.com/End-2-End-Technologies-Inc/libmodbus_e2e/issues],
+        [https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e/issues],
         [libmodbus_e2e],
         [http://libmodbus.org/])
 AC_CONFIG_SRCDIR([src/modbus.c])
