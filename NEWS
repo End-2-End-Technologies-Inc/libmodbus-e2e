@@ -1,5 +1,13 @@
 # NEWS
 
+## libmodbus-e2e 1.0.2 (2025-10-03)
+
+- Implemented new function `modbus_read_input_registers2()`.
+- Implemented new function `modbus_read_registers2()`.
+- Implemented new function `modbus_write_and_read_registers2()`.
+- Applied original Debain package patches.
+- Added Debian packaging scripts.
+
 ## libmodbus 3.1.11 (2024-10-22)
 
 - RTU - Check CRC before filtering on slave ID
