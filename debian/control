@@ -1,0 +1,40 @@
+Source: libmodbus-e2e
+Priority: optional
+Maintainer: End 2 End Technologies LLC <support@e2etechinc.com>
+Standards-Version: 4.7.0
+Section: libs
+Build-Depends: debhelper-compat (= 13), asciidoc, xmlto, psmisc
+Rules-Requires-Root: no
+Homepage: http://libmodbus.org/
+Vcs-Git: https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e.git
+Vcs-Browser: https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e
+
+Package: libmodbus-e2e0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Pre-Depends: ${misc:Pre-Depends}
+Multi-Arch: same
+Description: library for the Modbus protocol
+ A Modbus library written in C, to send/receive data with a device which
+ respects the Modbus protocol. This library can use a serial port or an
+ Ethernet connection.
+ .
+ This variant of the library contains customizations from
+ End 2 End Technologies LLC.
+ .
+ This package contains the shared library.
+
+Package: libmodbus-e2e-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libmodbus-e2e0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: development files for the Modbus protocol library
+ A Modbus library written in C, to send/receive data with a device which
+ respects the Modbus protocol. This library can use a serial port or an
+ Ethernet connection.
+ .
+ This variant of the library contains customizations from
+ End 2 End Technologies LLC.
+ .
+ This package contains the development files.

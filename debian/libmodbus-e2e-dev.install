@@ -1,0 +1,3 @@
+debian/tmp/usr/include/modbus_e2e/*
+debian/tmp/usr/lib/*/libmodbus_e2e.so
+debian/tmp/usr/lib/*/pkgconfig/libmodbus_e2e.pc

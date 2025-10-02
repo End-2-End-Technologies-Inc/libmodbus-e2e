@@ -1,0 +1,11 @@
+.debhelper/
+tmp/
+libmodbus-e2e-dev/
+libmodbus-e2e0/
+
+autoreconf.before
+autoreconf.after
+debhelper-build-stamp
+files
+libmodbus-e2e-dev.substvars
+libmodbus-e2e0.substvars
