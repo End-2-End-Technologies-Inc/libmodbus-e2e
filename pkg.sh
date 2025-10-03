@@ -75,13 +75,16 @@ if [[ -z "${_tag}" && -z "${_special_tag}" ]]; then
 fi
 
 if [[ -n "${_tag}" ]]; then
-  _tag=$( echo "${_tag}" | grep -E '^debian/v' )
-  if [[ -z "${_tag}" ]]; then
+  _t=$(echo "${_tag}" | grep -E '^debian/v')
+  if [[ -z "${_t}" ]]; then
     echo "$0: PACKAGE_VERSION_TAG does not match required pattern ${_tag_pattern}."
     exit 1
   fi
-  _tag="${_tag#debian/v}"
-  if [[ "${_tag}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+  _t="${_t#debian/v}"
+  echo "Tag version part: ${_t}"
+  if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
+    true
+  else
     echo "$0: PACKAGE_VERSION_TAG does not match required pattern ${_tag_pattern}."
     exit 1
   fi
@@ -93,7 +96,8 @@ if [[ -z "${_special_tag}" ]]; then
   mapfile -t _tags < <( git tag | grep -E '^debian/v' )
   _rtags=()
   for _t in "${_tags[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    _t2="${_t#debian/v}"
+    if [[ "${_t2}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _rtags+=("${_t}")
     fi
   done
@@ -110,7 +114,7 @@ if [[ -z "${_special_tag}" ]]; then
       break
     fi
   done
-  if [[ "${#_exists}" == 0 ]]; then
+  if [[ "${_exists}" == 0 ]]; then
     echo "$0: there is no release tag '${_tag}'." >&2
     exit 1
   fi
@@ -127,7 +131,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   _a=()
   for _t in "${_rtags[@]}"; do
     _t="${_t#debian/v}"
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _a+=("${_t}")
     fi
   done
@@ -139,7 +143,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find maximum major version
   _max_major=0
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _major="${BASH_REMATCH[1]}"
       if (( _major > _max_major )); then
         _max_major="${_major}"
@@ -150,7 +154,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Filter tags according to maximum major version
   _b=()
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _major="${BASH_REMATCH[1]}"
       if (( _major == _max_major )); then
         _b+=("${_t}")
@@ -165,7 +169,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find max minor version
   _max_minor=0
   for _t in "${_b[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _minor="${BASH_REMATCH[2]}"
       if (( _minor > _max_minor )); then
         _max_minor="${_minor}"
@@ -176,7 +180,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Filter tags according to maximum minor version
   _a=()
   for _t in "${_b[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _minor="${BASH_REMATCH[2]}"
       if (( _minor == _max_minor )); then
         _a+=("${_t}")
@@ -191,7 +195,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find max patch version
   _max_patch=0
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _patch="${BASH_REMATCH[3]}"
       if (( _patch > _max_patch )); then
         _max_patch="${_patch}"
@@ -202,7 +206,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Filter tags according to maximum patch version
   _b=()
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _patch="${BASH_REMATCH[3]}"
       if (( _patch == _max_patch )); then
         _b+=("${_t}")
@@ -217,7 +221,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find max debian version
   _max_debian_ver=0
   for _t in "${_b[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _debian_ver="${BASH_REMATCH[4]}"
       if (( _debian_ver > _max_debian_ver )); then
         _max_debian_ver="${_debian_ver}"
