@@ -163,7 +163,7 @@ and [Versioning wiki page](https://wiki.debian.org/Versioning)).
 2. Run packaging script with package tag, for example:
 
    ```shell
-   .pkg.sh debian/v1.0.2-1
+   ./pkg.sh debian/v1.0.2-1
    ```
 
 Resulting `deb` and possibly `ddeb` package files will appear in the `$HOME/Packages`.
