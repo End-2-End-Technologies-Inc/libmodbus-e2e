@@ -25,7 +25,7 @@ aplied to the code and makes no any promises of keeping it up to date, accurate 
 
 ## Overview
 
-libmodbus_e2e is a free software library to send/receive data with a device which
+libmodbus-e2e is a free software library to send/receive data with a device which
 respects the Modbus protocol. This library can use a serial port or an Ethernet
 connection.
 
