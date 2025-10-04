@@ -1,15 +1,15 @@
 # A groovy modbus library
 
-## End 2 End Technologies Notice
+## End 2 End Technologies LLC Notice
 
-This is private variant of the `libmodbus` maintained by the End 2 End Technologies, LLC.
+This is private variant of the `libmodbus` maintained by the End 2 End Technologies LLC ("E2E").
 for its own purposes. However, in order to comply with conditions of the LGPL license,
 source code of this variant is made public through this repository.
 
 You are allowed to use this variant of `libmodbus` according to conditions of the LGPL license,
 including, but not limited to, creating derivative works.
 However, for this variant, feature requests are not accepted, pull requests also not accepted,
-and End 2 End Technogies will maintain additional feature set, not available
+and E2E will maintain additional feature set, not available
 in the original `libmodbus`, and some other differences from the original library
 on its own discretion. Please send your feature requests to the original `libmodbus`.
 However, bug reports related to this variant of the library are always welcome.
@@ -19,7 +19,7 @@ It may be incompatible with other operating systems, that original `libmodbus` i
 
 The rest of content of this document is just a copy of the original README.md document
 from the original `libmodbus`, slightly updated to refelect some changes,
-introduced by End 2 End Technologies. However, End 2 End Technologies does not provide
+introduced by E2E. However, E2E does not provide
 any warranties of any kind about its accuracy and relevance after the changes,
 aplied to the code and makes no any promises of keeping it up to date, accurate and relevant.
 
@@ -39,7 +39,7 @@ The website contains the latest version of the documentation for the original li
 Latest documentation for this variant of library is in this repository.
 
 The original library is written in C and designed to run on Linux, Mac OS X, FreeBSD, Embox,
-QNX and Windows. End 2 End Technologies, however, currently targets
+QNX and Windows. E2E, however, currently targets
 this variant of the library only to Linux-based systems.
 
 You can use the original library on MCUs with Embox RTOS.
@@ -103,3 +103,67 @@ You can serve the local documentation with:
 pip install mkdocs-material
 mkdocs serve
 ```
+
+## Packaging
+
+NOTE: This section is addeed and maintained by End 2 End Technologies LLC.
+
+### Overview of Packaging
+
+This repository contains files and tags for producing Debian packages.
+RPM packages are not officially supported yet.
+
+Packaging files are maintained on the branch `debian`.
+
+Package tags have format `debian/vX.Y.Z-D`, which resembles package vesion, including "Debian version" component
+(see [Debian Policy Manual, section 5.6.12.2. Special version conventions](https://www.debian.org/doc/debian-policy/ch-controlfields.html#special-version-conventions)
+and [Versioning wiki page](https://wiki.debian.org/Versioning)).
+
+### Releasing a new Debian package version
+
+1. Merge release tag into branch `debian`:
+
+   ```shell
+   git checkout debian
+   git merge vX.Y.Z
+   # Resolve any merge conflicts here
+   git push
+   ```
+
+2. Add new entry into [changelog](debian/changelog), commit and push it.
+
+   ```shell
+   vim debian/changelog
+   # add new entry
+   git add debian/changelog
+   git commit -m "Updated changelog for package vX.Y.Z-D"
+   git push
+   ```
+
+3. Test package build, fix any issues.
+
+4. Make sure all your changes committed and pushed.
+
+5. Put new package tag and push it.
+
+   ```shell
+   git tag debian/vX.Y.Z-D
+   git push --tags
+   ```
+
+### Building Debian package
+
+1. Preparation: install required build dependencides:
+
+   ```shell
+   sudo apt install -y autoconf automake build-essential debhelper asciidoc \
+                       xmlto psmisc
+   ```
+
+2. Run packaging script with package tag, for example:
+
+   ```shell
+   .pkg.sh debian/v1.0.2-1
+   ```
+
+Resulting `deb` and possibly `ddeb` package files will appear in the `$HOME/Packages`.
