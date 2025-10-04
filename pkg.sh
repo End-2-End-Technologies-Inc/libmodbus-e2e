@@ -252,7 +252,7 @@ function on_exit
 }
 trap on_exit EXIT
 
-_build_dir=$(mktemp -d)
+_build_dir=$(mktemp -d --tmpdir libmodbus-e2e-pkg-XXXXXXXXXX)
 echo "Build directory: ${_build_dir}"
 
 echo "Cloning repository..."
