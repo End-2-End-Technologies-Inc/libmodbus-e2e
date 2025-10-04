@@ -110,14 +110,15 @@ NOTE: This section is addeed and maintained by End 2 End Technologies LLC.
 
 ### Overview of Packaging
 
-This repository contains files and tags for producing Debian packages.
-RPM packages are not officially supported yet.
+This repository contains files and tags for producing binary packages.
 
-Packaging files are maintained on the branch `debian`.
+Debian packaging files are maintained on the branch `debian`.
 
-Package tags have format `debian/vX.Y.Z-D`, which resembles package vesion, including "Debian version" component
+Debian package tags have format `debian/vX.Y.Z-D`, which resembles package vesion, including "Debian version" component
 (see [Debian Policy Manual, section 5.6.12.2. Special version conventions](https://www.debian.org/doc/debian-policy/ch-controlfields.html#special-version-conventions)
 and [Versioning wiki page](https://wiki.debian.org/Versioning)).
+
+RPM packages are not officially supported yet, but branch `rpm` exists for that purpose.
 
 ### Releasing a new Debian package version
 
