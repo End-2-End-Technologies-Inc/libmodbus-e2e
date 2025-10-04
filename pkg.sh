@@ -279,24 +279,82 @@ if [[ -n "${_commit}" ]]; then
   echo " -- End 2 End Technologies <support@e2etechinc.com>  ${_dt}" >>debian/changelog
   echo "" >>debian/changelog
   cat debian/changelog.original >>debian/changelog
-  cd ..
+  rm -f debian/changelog.original
+  echo "==============================================="
+  echo "VERSION: ${_version}"
+  echo "==============================================="
 else
   git clone https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e.git --branch "${_tag}" --depth 1
   _version="${_tag#debian/v}"
+  cd libmodbus-e2e
+  if [[ ! -d debian ]]; then
+    echo "$0: missing 'debian' directory at the tag or branch '${_tag}'."
+    exit 1
+  fi
+
+  echo "Parsing changelog..."
+  _last_rev=$(head -n1 debian/changelog)
+  _pkg=$(echo "${_last_rev}" | cut -f1 -d' ')
+  _ver=$(echo "${_last_rev}" | cut -f2 -d' ')
+  _ver="${_ver#(}"
+  _ver="${_ver%)}"
+  _urgency=$(echo "${_last_rev}" | cut -f4 -d' ')
+
+  echo "Parsing package version..."
+  _v1=$(echo "${_ver}" | cut -f1 -d-)
+  _v2=$(echo "${_ver}" | cut -f2 -d- -s)
+  if [[ -z "${_v2}" ]]; then
+    _v2=1
+    _v3=1
+  else
+    _v3=$(echo "${_ver}" | cut -f3 -d- -s)
+  fi
+  if [[ -z "${_v3}" ]]; then
+    _v3=1
+  fi
+
+  echo "Updating package version..."
+  _os_id=$(cat /etc/os-release | grep -E ^ID= | cut -f2 -d=)
+  if [[ "${_os_id}" == "debian" || "${_os_id}" == "raspbian" ]]; then
+    _os_id="deb"
+  fi
+  _os_ver=$(cat /etc/os-release | grep -E ^VERSION_ID= | cut -f2 -d=)
+  _os_ver="${_os_ver#\"}"
+  _os_ver="${_os_ver%\"}"
+  _os_codename=$(cat /etc/os-release | grep -E ^VERSION_CODENAME= | cut -f2 -d=)
+
+  echo "Updating changelog..."
+  tail -n +2 debian/changelog >debian/changelog.original
+  # See https://www.debian.org/doc/debian-policy/ch-controlfields.html#special-version-conventions
+  # "Stable updates"
+  if [[ "${_v3}" == 1 ]]; then
+    _ending_sep="~"
+  else
+    _ending_sep="+"
+  fi
+  _ver="${_v1}-${_v2}${_ending_sep}${_os_id}${_os_ver}u${_v3}"
+  echo "==============================================="
+  echo "v1=[${_v1}]"
+  echo "v2=[${_v2}]"
+  echo "v3=[${_v3}]"
+  echo "VERSION: ${_ver}"
+  echo "==============================================="
+  echo "${_pkg} (${_ver}) ${_os_codename}; ${_urgency}" >debian/changelog
+  cat debian/changelog.original >>debian/changelog
+  rm -f debian/changelog.original
 fi
 
-echo "Version: ${_version}"
 echo ""
-
 echo "Building package..."
 
-cd libmodbus-e2e
 autoreconf -i
 fakeroot debian/rules binary
+echo ""
 echo "Packages built."
 cd ..
 ls -la
 
+echo ""
 echo "Copying package files..."
 mkdir -p "$HOME/Packages"
 if find . -maxdepth 1 -name '*.deb' | grep -q .; then
@@ -306,4 +364,5 @@ if find . -maxdepth 1 -name '*.ddeb' | grep -q .; then
   cp -fv *.ddeb "$HOME/Packages"
 fi
 
+echo ""
 echo "Done."
