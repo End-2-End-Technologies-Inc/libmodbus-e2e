@@ -260,12 +260,16 @@ cd "${_build_dir}"
 if [[ -n "${_commit}" ]]; then
   git clone https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e.git
   cd libmodbus-e2e
+  echo "Requested commit hash: ${_commit}"
   git checkout "${_commit}"
+  _commit=$(git rev-parse HEAD)
+  echo "Amended commit hash: ${_commit}"
   _ts_now=$(date -u +"%Y%m%d%H%M%S")
   _major=$(grep m4_define configure.ac | grep libmodbus_e2e_version_major | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
   _minor=$(grep m4_define configure.ac | grep libmodbus_e2e_version_minor | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
   _patch=$(grep m4_define configure.ac | grep libmodbus_e2e_version_micro | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
-  _version="${_major}.${_minor}.${_patch}~git${_ts_now}.${_commit}"
+  # Follow convention described here: https://wiki.debian.org/Versioning
+  _version="${_major}.${_minor}.${_patch}~git${_ts_now}.${_commit}-1"
   mv -f debian/changelog debian/changelog.original
   echo "libmodbus-e2e (${_version}) unstable; urgency=medium" >debian/changelog
   echo "" >>debian/changelog
