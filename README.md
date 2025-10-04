@@ -114,11 +114,13 @@ This repository contains files and tags for producing binary packages.
 
 Debian packaging files are maintained on the branch `debian`.
 
-Debian package tags have format `debian/vX.Y.Z-D`, which resembles package vesion, including "Debian version" component
+Debian package tags have format `debian/vX.Y.Z-D`, which resembles
+package vesion, including "Debian version" component
 (see [Debian Policy Manual, section 5.6.12.2. Special version conventions](https://www.debian.org/doc/debian-policy/ch-controlfields.html#special-version-conventions)
 and [Versioning wiki page](https://wiki.debian.org/Versioning)).
 
-RPM packages are not officially supported yet, but branch `rpm` exists for that purpose.
+RPM packages are not officially supported yet, however branch `rpm` exists
+for that purpose in the future.
 
 ### Releasing a new Debian package version
 
@@ -137,7 +139,7 @@ RPM packages are not officially supported yet, but branch `rpm` exists for that 
    vim debian/changelog
    # add new entry
    git add debian/changelog
-   git commit -m "Updated changelog for package vX.Y.Z-D"
+   git commit -m "Update changelog for package vX.Y.Z-D"
    git push
    ```
 
@@ -167,4 +169,5 @@ RPM packages are not officially supported yet, but branch `rpm` exists for that 
    ./pkg.sh debian/v1.0.2-1
    ```
 
-Resulting `deb` and possibly `ddeb` package files will appear in the `$HOME/Packages`.
+Resulting `deb` and possibly `ddeb` package files will appear in the
+directory `$HOME/Packages`.
