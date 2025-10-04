@@ -253,6 +253,7 @@ function on_exit
 trap on_exit EXIT
 
 _build_dir=$(mktemp -d)
+echo "Build directory: ${_build_dir}"
 
 echo "Cloning repository..."
 cd "${_build_dir}"
