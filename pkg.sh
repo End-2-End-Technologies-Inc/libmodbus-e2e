@@ -358,11 +358,24 @@ echo ""
 echo "Copying package files..."
 mkdir -p "$HOME/Packages"
 if find . -maxdepth 1 -name '*.deb' | grep -q .; then
+  _main_pkg_search="libmodbus-e2e0"
+  _main_pkg_base=$(find . -maxdepth 1 -name '*.deb' | grep "${_main_pkg_search}" | grep -v dbgsym | sed 's|./||g' | sed 's|.deb||g')
+  if [[ -z "${_main_pkg_base}" ]]; then
+    echo "$0: Main package (containing with ${_main_pkg_search}) not found." >&2
+    exit 1
+  fi
+  _cs_file="${_main_pkg_base}.sha256"
+  sha256sum *.deb > "${_main_pkg_base}.sha256"
   cp -fv *.deb "$HOME/Packages"
+else
+  echo "$0: No DEB files generated!" >&2
+  exit 1
 fi
 if find . -maxdepth 1 -name '*.ddeb' | grep -q .; then
+  sha256sum *.ddeb >> "${_main_pkg_base}.sha256"
   cp -fv *.ddeb "$HOME/Packages"
 fi
+cp -f "${_main_pkg_base}.sha256" "$HOME/Packages"
 
 echo ""
 echo "Done."
