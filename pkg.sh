@@ -122,7 +122,7 @@ if [[ -z "${_special_tag}" ]]; then
 elif [[ "${_special_tag}" == "--current" ]]; then
 
   # Get current commit
-  _commit=$(git rev-parse HEAD)
+  _commit=$(git rev-parse --short HEAD)
 
 elif [[ "${_special_tag}" == "--latest" ]]; then
 
@@ -262,7 +262,7 @@ if [[ -n "${_commit}" ]]; then
   cd libmodbus-e2e
   echo "Requested commit hash: ${_commit}"
   git checkout "${_commit}"
-  _commit=$(git rev-parse HEAD)
+  _commit=$(git rev-parse --short HEAD)
   echo "Amended commit hash: ${_commit}"
   _ts_now=$(date -u +"%Y%m%d%H%M%S")
   _major=$(grep m4_define configure.ac | grep libmodbus_e2e_version_major | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
