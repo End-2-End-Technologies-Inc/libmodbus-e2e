@@ -49,7 +49,7 @@ successful. Otherwise it shall return -1 and set errno.
 
 This page is added by End 2 End Technologies, LLC.
 
-Most of text on this page is derived from documentation page for the function `modbus_read_input_registers()`.
+Its content is partially based on the documentation page for the function `modbus_read_input_registers()`.
 
-Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
 Copyright (c) End 2 End Technologies, LLC., 2025-2026. All rights reserved.
+Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.

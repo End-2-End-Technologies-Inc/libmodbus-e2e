@@ -55,4 +55,7 @@ it shall return -1 and set errno.
 
 This page is added by End 2 End Technologies, LLC.
 
+Its content is partially based on the documentation page for the function `modbus_write_and_read_registers()`.
+
 Copyright (c) End 2 End Technologies, LLC., 2025-2026. All rights reserved.
+Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
