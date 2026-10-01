@@ -5,7 +5,7 @@
 # libmodbus-e2e - Fork of the libmodbus library.
 # Copyright (c) End 2 End Technologies LLC, 2025. All rights reserved.
 #
-# pkg.sh
+# debpkg.sh
 #
 # Build Debian packages.
 ###############################################################################
