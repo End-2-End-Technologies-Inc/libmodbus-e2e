@@ -1,6 +1,6 @@
 # NEWS
 
-## libmodbus-e2e 1.0.3 (2026-10-01)
+## libmodbus-e2e 1.1.0 (2026-10-01)
 
 - Synchronized with upstream version 3.2.0.
 
