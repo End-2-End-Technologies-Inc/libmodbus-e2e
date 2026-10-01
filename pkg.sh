@@ -356,7 +356,9 @@ ls -la
 
 echo ""
 echo "Copying package files..."
-mkdir -p "$HOME/Packages"
+_ts=$(data +%s)
+_target_dir="$HOME/Packages/build-libmodus_e2e-${_ts}"
+mkdir -p "${_target_dir}"
 if find . -maxdepth 1 -name '*.deb' | grep -q .; then
   _main_pkg_search="libmodbus-e2e0"
   _main_pkg_base=$(find . -maxdepth 1 -name '*.deb' | grep "${_main_pkg_search}" | grep -v dbgsym | sed 's|./||g' | sed 's|.deb||g')
@@ -366,16 +368,16 @@ if find . -maxdepth 1 -name '*.deb' | grep -q .; then
   fi
   _cs_file="${_main_pkg_base}.sha256"
   sha256sum *.deb > "${_main_pkg_base}.sha256"
-  cp -fv *.deb "$HOME/Packages"
+  cp -fv *.deb "${_target_dir}"
 else
   echo "$0: No DEB files generated!" >&2
   exit 1
 fi
 if find . -maxdepth 1 -name '*.ddeb' | grep -q .; then
   sha256sum *.ddeb >> "${_main_pkg_base}.sha256"
-  cp -fv *.ddeb "$HOME/Packages"
+  cp -fv *.ddeb "${_target_dir}"
 fi
-cp -f "${_main_pkg_base}.sha256" "$HOME/Packages"
+cp -f "${_main_pkg_base}.sha256" "${_target_dir}"
 
 echo ""
 echo "Done."
