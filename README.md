@@ -161,15 +161,44 @@ for that purpose in the future.
 1. Preparation: install required build dependencides:
 
    ```shell
-   sudo apt install -y autoconf automake build-essential debhelper asciidoc \
-                       xmlto psmisc
+   sudo apt install -y \
+      autoconf automake build-essential debhelper asciidoc xmlto psmisc
    ```
 
 2. Run packaging script with package tag, for example:
 
    ```shell
-   ./pkg.sh debian/v1.0.2-1
+   ./pkg.sh debian/v1.1.0-1
    ```
 
 Resulting `deb` and possibly `ddeb` package files will appear in the
 directory `$HOME/Packages`.
+
+### Shared Object Versioning
+
+#### Preamble
+
+Below are recommendations obtained by asking AI assistant (Google Gemini) a question about
+shared object versioning.
+
+#### Understanding Shared Library Versioning
+
+For Linux shared libraries, the versioning scheme libmylib.so.major.minor.patch is designed to help the dynamic linker and developers manage compatibility. Deciding when to change each component depends entirely on whether your changes affect API (Application Programming Interface) or ABI (Application Binary Interface) stability.
+
+#### When to Increment Each Component
+
+- Major Version (X.0.0): Increment this number when you introduce breaking changes to the public API or ABI. Examples include removing public functions, altering existing function signatures, or modifying shared data structures. Programs compiled against older versions will fail to link or run properly.
+
+- Minor Version (0.X.0): Increment this when you add new features or capabilities in a completely backward-compatible manner. Examples include adding new public functions or classes. Programs built against the older version will continue to function without modification or recompilation.
+
+- Patch Version (0.0.X): Increment this for backward-compatible bug fixes, security updates, or internal performance optimizations. There are no changes to the public API or ABI, making it a seamless drop-in replacement.
+
+#### Best Practices for Shared Libraries
+
+- The 0.y.z Phase: Since your library is currently at 0.0.0, software in the initial 0.x.x development phase often signals that breaking changes can happen at any time, so strict compatibility guarantees are typically relaxed until you reach 1.0.0.
+
+- Soname vs. Filename: Keep in mind that the full filename (libmylib.so.0.0.0) includes all components, but the dynamic linker often relies on the SONAME (typically just libmylib.so.0), which only changes when the major version changes to preserve backward compatibility for minor and patch updates.
+
+<br>
+Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com>
+Copyright © End 2 End Technologies, LLC., 2025-2026.
