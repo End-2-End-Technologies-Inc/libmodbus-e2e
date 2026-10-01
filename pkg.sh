@@ -356,8 +356,8 @@ ls -la
 
 echo ""
 echo "Copying package files..."
-_ts=$(data +%s)
-_target_dir="$HOME/Packages/build-libmodus_e2e-${_ts}"
+_ts=$(date -u +%Y%m%d-%H%M%S)
+_target_dir="$HOME/Packages/libmodus-e2e-${_v1}-${_ts}"
 mkdir -p "${_target_dir}"
 if find . -maxdepth 1 -name '*.deb' | grep -q .; then
   _main_pkg_search="libmodbus-e2e0"
