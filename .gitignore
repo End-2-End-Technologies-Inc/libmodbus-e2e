@@ -52,3 +52,6 @@ tests/unit-test-client
 tests/unit-test-server
 tests/version
 tests/stamp-h2
+
+# Merge/rebase leftovers
+*.orig
