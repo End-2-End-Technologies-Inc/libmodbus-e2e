@@ -10,7 +10,7 @@ AM_CPPFLAGS = \
     -DLIBEXECDIR=\""$(libexecdir)"\" \
     -I${top_srcdir}/src
 
-AM_CFLAGS = ${WARNING_CFLAGS}
+AM_CFLAGS = $(LIBMODBUSCFLAGS) $(WARNING_CFLAGS)
 
 libmodbus_e2e_la_SOURCES = \
         modbus.c \

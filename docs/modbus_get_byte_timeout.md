@@ -21,6 +21,10 @@ arguments.
 The function shall return 0 if successful. Otherwise it shall return -1 and set
 errno.
 
+## Errors
+
+- *EINVAL*, the context is NULL or one of `to_sec` / `to_usec` is NULL.
+
 ## Example
 
 ```c

@@ -33,6 +33,10 @@ modbus_get_response_timeout(ctx, &old_response_to_sec, &old_response_to_usec);
 modbus_set_response_timeout(ctx, 0, 0);
 ```
 
+## Errors
+
+- *EINVAL*, the context is NULL or one of `to_sec` / `to_usec` is NULL.
+
 ## See also
 
 - [modbus_set_response_timeout](modbus_set_response_timeout.md)

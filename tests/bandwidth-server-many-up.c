@@ -73,7 +73,17 @@ int main(void)
 
     /* Clear the reference set of socket */
     FD_ZERO(&refset);
-    /* Add the server socket */
+    /* Add the server socket (modbus_tcp_listen already guarantees the
+     * descriptor is below FD_SETSIZE, but check defensively before FD_SET). */
+    if (server_socket >= FD_SETSIZE) {
+        fprintf(stderr,
+                "Server socket %d exceeds FD_SETSIZE (%d)\n",
+                server_socket,
+                FD_SETSIZE);
+        close(server_socket);
+        modbus_free(ctx);
+        return -1;
+    }
     FD_SET(server_socket, &refset);
 
     /* Keep track of the max file descriptor */
@@ -106,6 +116,15 @@ int main(void)
                 newfd = accept(server_socket, (struct sockaddr *) &clientaddr, &addrlen);
                 if (newfd == -1) {
                     perror("Server accept() error");
+                } else if (newfd >= FD_SETSIZE) {
+                    /* fd_set/FD_SET cannot represent a descriptor >= FD_SETSIZE;
+                     * setting it would corrupt the stack. Refuse the connection
+                     * instead. A real server should use poll()/epoll(). */
+                    fprintf(stderr,
+                            "Refusing socket %d: exceeds FD_SETSIZE (%d)\n",
+                            newfd,
+                            FD_SETSIZE);
+                    close(newfd);
                 } else {
                     FD_SET(newfd, &refset);
 

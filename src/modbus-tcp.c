@@ -236,7 +236,11 @@ static int _modbus_tcp_set_ipv4_options(int s)
     /* Set the TCP no delay flag */
     /* SOL_TCP = IPPROTO_TCP */
     option = 1;
-    rc = setsockopt(s, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+#ifdef _WIN32
+    rc = setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (const char *)&option, sizeof(int));
+#else
+    rc = setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (const void *)&option, sizeof(int));
+#endif
     if (rc == -1) {
         return -1;
     }
@@ -264,7 +268,11 @@ static int _modbus_tcp_set_ipv4_options(int s)
      **/
     /* Set the IP low delay option */
     option = IPTOS_LOWDELAY;
-    rc = setsockopt(s, IPPROTO_IP, IP_TOS, &option, sizeof(int));
+#ifdef _WIN32
+    rc = setsockopt(s, IPPROTO_IP, IP_TOS, (const char *)&option, sizeof(int));
+#else
+    rc = setsockopt(s, IPPROTO_IP, IP_TOS, (const void *)&option, sizeof(int));
+#endif
     if (rc == -1) {
         return -1;
     }
@@ -297,6 +305,10 @@ static int _connect(int sockfd,
 
         /* Wait to be available in writing */
         FD_ZERO(&wset);
+        if (sockfd >= FD_SETSIZE) {
+            errno = EINVAL;
+            return -1;
+        }
         FD_SET(sockfd, &wset);
         rc = select(sockfd + 1, NULL, &wset, NULL, &tv);
         if (rc < 0) {
@@ -326,6 +338,7 @@ static int _connect(int sockfd,
 static int _modbus_tcp_connect(modbus_t *ctx)
 {
     int rc;
+    int s;
     /* Specialized version of sockaddr for Internet socket address (same size) */
     struct sockaddr_in addr;
     modbus_tcp_t *ctx_tcp = ctx->backend_data;
@@ -345,15 +358,27 @@ static int _modbus_tcp_connect(modbus_t *ctx)
     flags |= SOCK_NONBLOCK;
 #endif
 
-    ctx->s = socket(PF_INET, flags, 0);
-    if (ctx->s < 0) {
+    s = socket(PF_INET, flags, 0);
+    if (s < 0) {
         return -1;
     }
 
-    rc = _modbus_tcp_set_ipv4_options(ctx->s);
+    if (s >= FD_SETSIZE) {
+        if (ctx->debug) {
+            fprintf(
+                stderr,
+                "ERROR Socket descriptor %d exceeds FD_SETSIZE (%d)\n",
+                s,
+                FD_SETSIZE);
+        }
+        close(s);
+        errno = EINVAL;
+        return -1;
+    }
+
+    rc = _modbus_tcp_set_ipv4_options(s);
     if (rc == -1) {
-        close(ctx->s);
-        ctx->s = -1;
+        close(s);
         return -1;
     }
 
@@ -368,18 +393,21 @@ static int _modbus_tcp_connect(modbus_t *ctx)
         if (ctx->debug) {
             fprintf(stderr, "Invalid IP address: %s\n", ctx_tcp->ip);
         }
-        close(ctx->s);
-        ctx->s = -1;
+        close(s);
         return -1;
     }
 
-    rc =
-        _connect(ctx->s, (struct sockaddr *) &addr, sizeof(addr), &ctx->response_timeout);
+    rc = _connect(s, (struct sockaddr *) &addr, sizeof(addr), &ctx->response_timeout);
     if (rc == -1) {
-        close(ctx->s);
-        ctx->s = -1;
+        close(s);
         return -1;
     }
+
+    /* Replace any previously open socket */
+    if (ctx->s >= 0) {
+        close(ctx->s);
+    }
+    ctx->s = s;
 
     return 0;
 }
@@ -388,6 +416,7 @@ static int _modbus_tcp_connect(modbus_t *ctx)
 static int _modbus_tcp_pi_connect(modbus_t *ctx)
 {
     int rc;
+    int new_s = -1;
     struct addrinfo *ai_list;
     struct addrinfo *ai_ptr;
     struct addrinfo ai_hints;
@@ -419,7 +448,9 @@ static int _modbus_tcp_pi_connect(modbus_t *ctx)
             fprintf(stderr, "Error returned by getaddrinfo: %d\n", rc);
 #endif
         }
-        freeaddrinfo(ai_list);
+        if (ai_list != NULL) {
+            freeaddrinfo(ai_list);
+        }
         errno = ECONNREFUSED;
         return -1;
     }
@@ -440,6 +471,18 @@ static int _modbus_tcp_pi_connect(modbus_t *ctx)
         if (s < 0)
             continue;
 
+        if (s >= FD_SETSIZE) {
+            if (ctx->debug) {
+                fprintf(
+                    stderr,
+                    "ERROR Socket descriptor %d exceeds FD_SETSIZE (%d)\n",
+                    s,
+                    FD_SETSIZE);
+            }
+            close(s);
+            continue;
+        }
+
         if (ai_ptr->ai_family == AF_INET)
             _modbus_tcp_set_ipv4_options(s);
 
@@ -453,15 +496,21 @@ static int _modbus_tcp_pi_connect(modbus_t *ctx)
             continue;
         }
 
-        ctx->s = s;
+        new_s = s;
         break;
     }
 
     freeaddrinfo(ai_list);
 
-    if (ctx->s < 0) {
+    if (new_s < 0) {
         return -1;
     }
+
+    /* Replace any previously open socket */
+    if (ctx->s >= 0) {
+        close(ctx->s);
+    }
+    ctx->s = new_s;
 
     return 0;
 }
@@ -501,6 +550,10 @@ static int _modbus_tcp_flush(modbus_t *ctx)
         tv.tv_sec = 0;
         tv.tv_usec = 0;
         FD_ZERO(&rset);
+        if (ctx->s < 0 || ctx->s >= FD_SETSIZE) {
+            errno = EINVAL;
+            return -1;
+        }
         FD_SET(ctx->s, &rset);
         rc = select(ctx->s + 1, &rset, NULL, NULL, &tv);
         if (rc == -1) {
@@ -518,14 +571,14 @@ static int _modbus_tcp_flush(modbus_t *ctx)
                 rc_sum += rc;
             } else {
                 // Handle overflow
-                ctx->error_recovery = MODBUS_ERROR_RECOVERY_PROTOCOL;
                 errno = EOVERFLOW;
                 return -1;
             }
         }
     } while (rc == MODBUS_TCP_MAX_ADU_LENGTH);
 
-    return rc_sum;
+    /* Cast is safe: uint16_t always fits in int, and overflow is checked above */
+    return (int) rc_sum;
 }
 
 /* Listens for any request from one or many modbus masters in TCP */
@@ -563,7 +616,11 @@ int modbus_tcp_listen(modbus_t *ctx, int nb_connection)
     }
 
     enable = 1;
-    if (setsockopt(new_s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) == -1) {
+#ifdef _WIN32
+    if (setsockopt(new_s, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == -1) {
+#else
+    if (setsockopt(new_s, SOL_SOCKET, SO_REUSEADDR, (const void *)&enable, sizeof(enable)) == -1) {
+#endif
         close(new_s);
         return -1;
     }
@@ -658,7 +715,9 @@ int modbus_tcp_pi_listen(modbus_t *ctx, int nb_connection)
             fprintf(stderr, "Error returned by getaddrinfo: %d\n", rc);
 #endif
         }
-        freeaddrinfo(ai_list);
+        if (ai_list != NULL) {
+            freeaddrinfo(ai_list);
+        }
         errno = ECONNREFUSED;
         return -1;
     }
@@ -680,7 +739,11 @@ int modbus_tcp_pi_listen(modbus_t *ctx, int nb_connection)
             continue;
         } else {
             int enable = 1;
-            rc = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
+#ifdef _WIN32
+            rc = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable));
+#else
+            rc = setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (const void *)&enable, sizeof(enable));
+#endif
             if (rc != 0) {
                 close(s);
                 if (ctx->debug) {
@@ -742,6 +805,20 @@ int modbus_tcp_accept(modbus_t *ctx, int *s)
         return -1;
     }
 
+    if (ctx->s >= FD_SETSIZE) {
+        if (ctx->debug) {
+            fprintf(
+                stderr,
+                "ERROR Socket descriptor %d exceeds FD_SETSIZE (%d)\n",
+                ctx->s,
+                FD_SETSIZE);
+        }
+        close(ctx->s);
+        ctx->s = -1;
+        errno = EINVAL;
+        return -1;
+    }
+
     if (ctx->debug) {
         char buf[INET_ADDRSTRLEN];
         if (inet_ntop(AF_INET, &(addr.sin_addr), buf, INET_ADDRSTRLEN) == NULL) {
@@ -776,6 +853,20 @@ int modbus_tcp_pi_accept(modbus_t *ctx, int *s)
         return -1;
     }
 
+    if (ctx->s >= FD_SETSIZE) {
+        if (ctx->debug) {
+            fprintf(
+                stderr,
+                "ERROR Socket descriptor %d exceeds FD_SETSIZE (%d)\n",
+                ctx->s,
+                FD_SETSIZE);
+        }
+        close(ctx->s);
+        ctx->s = -1;
+        errno = EINVAL;
+        return -1;
+    }
+
     if (ctx->debug) {
         char buf[INET6_ADDRSTRLEN];
         if (inet_ntop(AF_INET6, &(addr.sin6_addr), buf, INET6_ADDRSTRLEN) == NULL) {
@@ -799,6 +890,10 @@ _modbus_tcp_select(modbus_t *ctx, fd_set *rset, struct timeval *tv, int length_t
             }
             /* Necessary after an error */
             FD_ZERO(rset);
+            if (ctx->s < 0 || ctx->s >= FD_SETSIZE) {
+                errno = EINVAL;
+                return -1;
+            }
             FD_SET(ctx->s, rset);
         } else {
             return -1;
@@ -894,7 +989,9 @@ modbus_t *modbus_new_tcp(const char *ip, int port)
        handler for SIGPIPE. */
     struct sigaction sa;
 
+    memset(&sa, 0, sizeof(sa));
     sa.sa_handler = SIG_IGN;
+    sigemptyset(&sa.sa_mask);
     if (sigaction(SIGPIPE, &sa, NULL) < 0) {
         /* The debug flag can't be set here... */
         fprintf(stderr, "Could not install SIGPIPE handler.\n");
@@ -939,6 +1036,7 @@ modbus_t *modbus_new_tcp(const char *ip, int port)
         }
     } else {
         ctx_tcp->ip[0] = '0';
+        ctx_tcp->ip[1] = '\0';
     }
     ctx_tcp->port = port;
     ctx_tcp->t_id = 0;

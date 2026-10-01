@@ -1,5 +1,5 @@
 # Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
-# Copyright © End 2 End Technologies, LLC., 2025.
+# Copyright © End 2 End Technologies, LLC., 2025-2026.
 
 # libmodbus_e2e package version number, (as distinct from shared library version)
 # An odd micro number indicates in-progress development from Git
@@ -17,7 +17,7 @@
 
 m4_define([libmodbus_e2e_version_major], [1])
 m4_define([libmodbus_e2e_version_minor], [0])
-m4_define([libmodbus_e2e_version_micro], [2])
+m4_define([libmodbus_e2e_version_micro], [3])
 
 m4_define([libmodbus_release_status],
     [m4_if(m4_eval(libmodbus_e2e_version_minor % 2), [1], [snapshot], [release])])
@@ -33,7 +33,11 @@ AC_INIT([libmodbus_e2e],
         [http://libmodbus.org/])
 AC_CONFIG_SRCDIR([src/modbus.c])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([check-news foreign 1.11 silent-rules tar-pax subdir-objects])
+AM_INIT_AUTOMAKE([foreign 1.11 silent-rules tar-pax subdir-objects])
+
+# Check if user provided CFLAGS before AC_PROG_CC sets defaults
+user_set_cflags="${CFLAGS+set}"
+
 AC_PROG_CC
 AC_USE_SYSTEM_EXTENSIONS
 AC_SYS_LARGEFILE
@@ -150,6 +154,8 @@ fi
 AC_CHECK_DECLS([TIOCSRS485], [], [], [[#include <sys/ioctl.h>]])
 # Check for RTS flags
 AC_CHECK_DECLS([TIOCM_RTS], [], [], [[#include <sys/ioctl.h>]])
+# Check for termios2 support
+AC_CHECK_TYPES([struct termios2], [], [], [[#include <asm/termbits.h>]])
 
 WARNING_CFLAGS="-Wall \
 -Wmissing-declarations -Wmissing-prototypes \
@@ -182,13 +188,18 @@ AC_ARG_ENABLE([debug],
   [enable_debug=$enableval],
   [enable_debug=no])
 
+# Set project-specific optimization flags based on debug mode.
+# These are added via AM_CFLAGS in Makefile.am, preserving user's CFLAGS.
 AS_IF([test "x$enable_debug" = "xyes"], [
-  CFLAGS="$CFLAGS -g -O0"
-  CXXFLAGS="$CXXFLAGS -g -O0"
+  LIBMODBUS_E2ECFLAGS="-g -O0"
+  # Clear AC_PROG_CC's default -O2 so debug mode works, unless user set CFLAGS
+  AS_IF([test "x$user_set_cflags" != "xset"], [
+    CFLAGS="-g"
+  ])
 ], [
-  CFLAGS="$CFLAGS -O2"
-  CXXFLAGS="$CXXFLAGS -O2"
+  LIBMODBUS_E2ECFLAGS="-O2"
 ])
+AC_SUBST([LIBMODBUS_E2ECFLAGS])
 
 AC_OUTPUT
 AC_MSG_RESULT([
@@ -201,7 +212,7 @@ AC_MSG_RESULT([
         includedir:             ${includedir}
 
         compiler:               ${CC}
-        cflags:                 ${CFLAGS} ${WARNING_CFLAGS}
+        cflags:                 ${LIBMODBUS_E2ECFLAGS} ${WARNING_CFLAGS} ${CFLAGS}
         ldflags:                ${LDFLAGS}
 
         tests:                  ${enable_tests}

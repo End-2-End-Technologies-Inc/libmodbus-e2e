@@ -75,13 +75,16 @@ if [[ -z "${_tag}" && -z "${_special_tag}" ]]; then
 fi
 
 if [[ -n "${_tag}" ]]; then
-  _tag=$( echo "${_tag}" | grep -E '^debian/v' )
-  if [[ -z "${_tag}" ]]; then
+  _t=$(echo "${_tag}" | grep -E '^debian/v')
+  if [[ -z "${_t}" ]]; then
     echo "$0: PACKAGE_VERSION_TAG does not match required pattern ${_tag_pattern}."
     exit 1
   fi
-  _tag="${_tag#debian/v}"
-  if [[ "${_tag}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+  _t="${_t#debian/v}"
+  echo "Tag version part: ${_t}"
+  if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
+    true
+  else
     echo "$0: PACKAGE_VERSION_TAG does not match required pattern ${_tag_pattern}."
     exit 1
   fi
@@ -93,7 +96,8 @@ if [[ -z "${_special_tag}" ]]; then
   mapfile -t _tags < <( git tag | grep -E '^debian/v' )
   _rtags=()
   for _t in "${_tags[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    _t2="${_t#debian/v}"
+    if [[ "${_t2}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _rtags+=("${_t}")
     fi
   done
@@ -110,7 +114,7 @@ if [[ -z "${_special_tag}" ]]; then
       break
     fi
   done
-  if [[ "${#_exists}" == 0 ]]; then
+  if [[ "${_exists}" == 0 ]]; then
     echo "$0: there is no release tag '${_tag}'." >&2
     exit 1
   fi
@@ -118,7 +122,7 @@ if [[ -z "${_special_tag}" ]]; then
 elif [[ "${_special_tag}" == "--current" ]]; then
 
   # Get current commit
-  _commit=$(git rev-parse HEAD)
+  _commit=$(git rev-parse --short HEAD)
 
 elif [[ "${_special_tag}" == "--latest" ]]; then
 
@@ -127,7 +131,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   _a=()
   for _t in "${_rtags[@]}"; do
     _t="${_t#debian/v}"
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _a+=("${_t}")
     fi
   done
@@ -139,7 +143,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find maximum major version
   _max_major=0
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _major="${BASH_REMATCH[1]}"
       if (( _major > _max_major )); then
         _max_major="${_major}"
@@ -150,7 +154,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Filter tags according to maximum major version
   _b=()
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _major="${BASH_REMATCH[1]}"
       if (( _major == _max_major )); then
         _b+=("${_t}")
@@ -165,7 +169,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find max minor version
   _max_minor=0
   for _t in "${_b[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _minor="${BASH_REMATCH[2]}"
       if (( _minor > _max_minor )); then
         _max_minor="${_minor}"
@@ -176,7 +180,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Filter tags according to maximum minor version
   _a=()
   for _t in "${_b[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _minor="${BASH_REMATCH[2]}"
       if (( _minor == _max_minor )); then
         _a+=("${_t}")
@@ -191,7 +195,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find max patch version
   _max_patch=0
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _patch="${BASH_REMATCH[3]}"
       if (( _patch > _max_patch )); then
         _max_patch="${_patch}"
@@ -202,7 +206,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Filter tags according to maximum patch version
   _b=()
   for _t in "${_a[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _patch="${BASH_REMATCH[3]}"
       if (( _patch == _max_patch )); then
         _b+=("${_t}")
@@ -217,7 +221,7 @@ elif [[ "${_special_tag}" == "--latest" ]]; then
   # Find max debian version
   _max_debian_ver=0
   for _t in "${_b[@]}"; do
-    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9]+)$ ]]; then
+    if [[ "${_t}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\-([0-9A-Za-z]+)$ ]]; then
       _debian_ver="${BASH_REMATCH[4]}"
       if (( _debian_ver > _max_debian_ver )); then
         _max_debian_ver="${_debian_ver}"
@@ -248,19 +252,24 @@ function on_exit
 }
 trap on_exit EXIT
 
-_build_dir=$(mktemp -d)
+_build_dir=$(mktemp -d --tmpdir libmodbus-e2e-pkg-XXXXXXXXXX)
+echo "Build directory: ${_build_dir}"
 
 echo "Cloning repository..."
 cd "${_build_dir}"
 if [[ -n "${_commit}" ]]; then
   git clone https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e.git
   cd libmodbus-e2e
+  echo "Requested commit hash: ${_commit}"
   git checkout "${_commit}"
+  _commit=$(git rev-parse --short HEAD)
+  echo "Amended commit hash: ${_commit}"
   _ts_now=$(date -u +"%Y%m%d%H%M%S")
   _major=$(grep m4_define configure.ac | grep libmodbus_e2e_version_major | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
   _minor=$(grep m4_define configure.ac | grep libmodbus_e2e_version_minor | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
   _patch=$(grep m4_define configure.ac | grep libmodbus_e2e_version_micro | sed -n 's/.*\[\([^]]*\)\].*\[\([^]]*\)\].*/\2/p')
-  _version="${_major}.${_minor}.${_patch}~git${_ts_now}.${_commit}"
+  # Follow convention described here: https://wiki.debian.org/Versioning
+  _version="${_major}.${_minor}.${_patch}~git${_ts_now}.${_commit}-1"
   mv -f debian/changelog debian/changelog.original
   echo "libmodbus-e2e (${_version}) unstable; urgency=medium" >debian/changelog
   echo "" >>debian/changelog
@@ -270,31 +279,103 @@ if [[ -n "${_commit}" ]]; then
   echo " -- End 2 End Technologies <support@e2etechinc.com>  ${_dt}" >>debian/changelog
   echo "" >>debian/changelog
   cat debian/changelog.original >>debian/changelog
-  cd ..
+  rm -f debian/changelog.original
+  echo "==============================================="
+  echo "VERSION: ${_version}"
+  echo "==============================================="
 else
   git clone https://github.com/End-2-End-Technologies-Inc/libmodbus-e2e.git --branch "${_tag}" --depth 1
   _version="${_tag#debian/v}"
+  cd libmodbus-e2e
+  if [[ ! -d debian ]]; then
+    echo "$0: missing 'debian' directory at the tag or branch '${_tag}'."
+    exit 1
+  fi
+
+  echo "Parsing changelog..."
+  _last_rev=$(head -n1 debian/changelog)
+  _pkg=$(echo "${_last_rev}" | cut -f1 -d' ')
+  _ver=$(echo "${_last_rev}" | cut -f2 -d' ')
+  _ver="${_ver#(}"
+  _ver="${_ver%)}"
+  _urgency=$(echo "${_last_rev}" | cut -f4 -d' ')
+
+  echo "Parsing package version..."
+  _v1=$(echo "${_ver}" | cut -f1 -d-)
+  _v2=$(echo "${_ver}" | cut -f2 -d- -s)
+  if [[ -z "${_v2}" ]]; then
+    _v2=1
+    _v3=1
+  else
+    _v3=$(echo "${_ver}" | cut -f3 -d- -s)
+  fi
+  if [[ -z "${_v3}" ]]; then
+    _v3=1
+  fi
+
+  echo "Updating package version..."
+  _os_id=$(cat /etc/os-release | grep -E ^ID= | cut -f2 -d=)
+  if [[ "${_os_id}" == "debian" || "${_os_id}" == "raspbian" ]]; then
+    _os_id="deb"
+  fi
+  _os_ver=$(cat /etc/os-release | grep -E ^VERSION_ID= | cut -f2 -d=)
+  _os_ver="${_os_ver#\"}"
+  _os_ver="${_os_ver%\"}"
+  _os_codename=$(cat /etc/os-release | grep -E ^VERSION_CODENAME= | cut -f2 -d=)
+
+  echo "Updating changelog..."
+  tail -n +2 debian/changelog >debian/changelog.original
+  # See https://www.debian.org/doc/debian-policy/ch-controlfields.html#special-version-conventions
+  # "Stable updates"
+  if [[ "${_v3}" == 1 ]]; then
+    _ending_sep="~"
+  else
+    _ending_sep="+"
+  fi
+  _ver="${_v1}-${_v2}${_ending_sep}${_os_id}${_os_ver}u${_v3}"
+  echo "==============================================="
+  echo "v1=[${_v1}]"
+  echo "v2=[${_v2}]"
+  echo "v3=[${_v3}]"
+  echo "VERSION: ${_ver}"
+  echo "==============================================="
+  echo "${_pkg} (${_ver}) ${_os_codename}; ${_urgency}" >debian/changelog
+  cat debian/changelog.original >>debian/changelog
+  rm -f debian/changelog.original
 fi
 
-echo "Version: ${_version}"
 echo ""
-
 echo "Building package..."
 
-cd libmodbus-e2e
 autoreconf -i
 fakeroot debian/rules binary
+echo ""
 echo "Packages built."
 cd ..
 ls -la
 
+echo ""
 echo "Copying package files..."
 mkdir -p "$HOME/Packages"
 if find . -maxdepth 1 -name '*.deb' | grep -q .; then
+  _main_pkg_search="libmodbus-e2e0"
+  _main_pkg_base=$(find . -maxdepth 1 -name '*.deb' | grep "${_main_pkg_search}" | grep -v dbgsym | sed 's|./||g' | sed 's|.deb||g')
+  if [[ -z "${_main_pkg_base}" ]]; then
+    echo "$0: Main package (containing with ${_main_pkg_search}) not found." >&2
+    exit 1
+  fi
+  _cs_file="${_main_pkg_base}.sha256"
+  sha256sum *.deb > "${_main_pkg_base}.sha256"
   cp -fv *.deb "$HOME/Packages"
+else
+  echo "$0: No DEB files generated!" >&2
+  exit 1
 fi
 if find . -maxdepth 1 -name '*.ddeb' | grep -q .; then
+  sha256sum *.ddeb >> "${_main_pkg_base}.sha256"
   cp -fv *.ddeb "$HOME/Packages"
 fi
+cp -f "${_main_pkg_base}.sha256" "$HOME/Packages"
 
+echo ""
 echo "Done."

@@ -10,6 +10,7 @@
 #include <unistd.h>
 #endif
 #include <errno.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
     uint32_t start;
     uint32_t end;
     uint32_t bytes;
-    uint32_t rate;
+    uint64_t rate;
     int rc;
     int n_loop;
     int use_backend;
@@ -103,17 +104,17 @@ int main(int argc, char *argv[])
     end = gettime_ms();
     elapsed = end - start;
 
-    rate = (n_loop * nb_points) * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) n_loop * nb_points * G_MSEC_PER_SEC / (end - start);
     printf("Transfer rate in points/seconds:\n");
-    printf("* %d points/s\n", rate);
+    printf("* %" PRIu64 " points/s\n", rate);
     printf("\n");
 
-    bytes = n_loop * (nb_points / 8) + ((nb_points % 8) ? 1 : 0);
-    rate = bytes / 1024 * G_MSEC_PER_SEC / (end - start);
+    bytes = n_loop * ((nb_points / 8) + ((nb_points % 8) ? 1 : 0));
+    rate = (uint64_t) bytes / 1024 * G_MSEC_PER_SEC / (end - start);
     printf("Values:\n");
     printf("* %d x %d values\n", n_loop, nb_points);
     printf("* %.3f ms for %d bytes\n", elapsed, bytes);
-    printf("* %d KiB/s\n", rate);
+    printf("* %" PRIu64 " KiB/s\n", rate);
     printf("\n");
 
     /* TCP: Query and response header and values */
@@ -121,9 +122,9 @@ int main(int argc, char *argv[])
     printf("Values and TCP Modbus overhead:\n");
     printf("* %d x %d bytes\n", n_loop, bytes);
     bytes = n_loop * bytes;
-    rate = bytes / 1024 * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) bytes / 1024 * G_MSEC_PER_SEC / (end - start);
     printf("* %.3f ms for %d bytes\n", elapsed, bytes);
-    printf("* %d KiB/s\n", rate);
+    printf("* %" PRIu64 " KiB/s\n", rate);
     printf("\n\n");
 
     printf("READ REGISTERS\n\n");
@@ -140,17 +141,17 @@ int main(int argc, char *argv[])
     end = gettime_ms();
     elapsed = end - start;
 
-    rate = (n_loop * nb_points) * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) n_loop * nb_points * G_MSEC_PER_SEC / (end - start);
     printf("Transfer rate in points/seconds:\n");
-    printf("* %d registers/s\n", rate);
+    printf("* %" PRIu64 " registers/s\n", rate);
     printf("\n");
 
     bytes = n_loop * nb_points * sizeof(uint16_t);
-    rate = bytes / 1024 * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) bytes / 1024 * G_MSEC_PER_SEC / (end - start);
     printf("Values:\n");
     printf("* %d x %d values\n", n_loop, nb_points);
     printf("* %.3f ms for %d bytes\n", elapsed, bytes);
-    printf("* %d KiB/s\n", rate);
+    printf("* %" PRIu64 " KiB/s\n", rate);
     printf("\n");
 
     /* TCP:Query and response header and values */
@@ -158,9 +159,9 @@ int main(int argc, char *argv[])
     printf("Values and TCP Modbus overhead:\n");
     printf("* %d x %d bytes\n", n_loop, bytes);
     bytes = n_loop * bytes;
-    rate = bytes / 1024 * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) bytes / 1024 * G_MSEC_PER_SEC / (end - start);
     printf("* %.3f ms for %d bytes\n", elapsed, bytes);
-    printf("* %d KiB/s\n", rate);
+    printf("* %" PRIu64 " KiB/s\n", rate);
     printf("\n\n");
 
     printf("WRITE AND READ REGISTERS\n\n");
@@ -178,17 +179,17 @@ int main(int argc, char *argv[])
     end = gettime_ms();
     elapsed = end - start;
 
-    rate = (n_loop * nb_points) * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) n_loop * nb_points * G_MSEC_PER_SEC / (end - start);
     printf("Transfer rate in points/seconds:\n");
-    printf("* %d registers/s\n", rate);
+    printf("* %" PRIu64 " registers/s\n", rate);
     printf("\n");
 
     bytes = n_loop * nb_points * sizeof(uint16_t);
-    rate = bytes / 1024 * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) bytes / 1024 * G_MSEC_PER_SEC / (end - start);
     printf("Values:\n");
     printf("* %d x %d values\n", n_loop, nb_points);
     printf("* %.3f ms for %d bytes\n", elapsed, bytes);
-    printf("* %d KiB/s\n", rate);
+    printf("* %" PRIu64 " KiB/s\n", rate);
     printf("\n");
 
     /* TCP:Query and response header and values */
@@ -196,9 +197,9 @@ int main(int argc, char *argv[])
     printf("Values and TCP Modbus overhead:\n");
     printf("* %d x %d bytes\n", n_loop, bytes);
     bytes = n_loop * bytes;
-    rate = bytes / 1024 * G_MSEC_PER_SEC / (end - start);
+    rate = (uint64_t) bytes / 1024 * G_MSEC_PER_SEC / (end - start);
     printf("* %.3f ms for %d bytes\n", elapsed, bytes);
-    printf("* %d KiB/s\n", rate);
+    printf("* %" PRIu64 " KiB/s\n", rate);
     printf("\n");
 
     /* Free the memory */
