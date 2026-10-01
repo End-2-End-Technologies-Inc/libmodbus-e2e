@@ -4,7 +4,6 @@
 
 - Synchronized with upstream version 3.2.0.
 
-
 ## libmodbus 3.2.0 (2026-07-02)
 
 - Add `modbus_proxy()` to bridge two Modbus backends (closes #70).
