@@ -255,6 +255,19 @@ trap on_exit EXIT
 _build_dir=$(mktemp -d --tmpdir libmodbus-e2e-pkg-XXXXXXXXXX)
 echo "Build directory: ${_build_dir}"
 
+echo "Getting system information..."
+_os_id=$(cat /etc/os-release | grep -E ^ID= | cut -f2 -d=)
+if [[ "${_os_id}" == "debian" || "${_os_id}" == "raspbian" ]]; then
+  _os_id="deb"
+fi
+_os_ver=$(cat /etc/os-release | grep -E ^VERSION_ID= | cut -f2 -d=)
+_os_ver="${_os_ver#\"}"
+_os_ver="${_os_ver%\"}"
+_os_codename=$(cat /etc/os-release | grep -E ^VERSION_CODENAME= | cut -f2 -d=)
+_arch=$(dpkg --print-architecture)
+echo "OS: ${_os_id} ${_os_ver} ${_os_codename} ${_arch}"
+
+
 echo "Cloning repository..."
 cd "${_build_dir}"
 if [[ -n "${_commit}" ]]; then
@@ -313,16 +326,6 @@ else
     _v3=1
   fi
 
-  echo "Updating package version..."
-  _os_id=$(cat /etc/os-release | grep -E ^ID= | cut -f2 -d=)
-  if [[ "${_os_id}" == "debian" || "${_os_id}" == "raspbian" ]]; then
-    _os_id="deb"
-  fi
-  _os_ver=$(cat /etc/os-release | grep -E ^VERSION_ID= | cut -f2 -d=)
-  _os_ver="${_os_ver#\"}"
-  _os_ver="${_os_ver%\"}"
-  _os_codename=$(cat /etc/os-release | grep -E ^VERSION_CODENAME= | cut -f2 -d=)
-
   echo "Updating changelog..."
   tail -n +2 debian/changelog >debian/changelog.original
   # See https://www.debian.org/doc/debian-policy/ch-controlfields.html#special-version-conventions
@@ -357,7 +360,7 @@ ls -la
 echo ""
 echo "Copying package files..."
 _ts=$(date -u +%Y%m%d-%H%M%S)
-_target_dir="$HOME/Packages/libmodus-e2e-${_v1}-${_ts}"
+_target_dir="$HOME/Packages/libmodus-e2e-${_v1}-${_os_id}-${_os_ver}-${_arch}-${_ts}"
 mkdir -p "${_target_dir}"
 if find . -maxdepth 1 -name '*.deb' | grep -q .; then
   _main_pkg_search="libmodbus-e2e0"
