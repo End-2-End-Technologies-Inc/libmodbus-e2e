@@ -20,7 +20,7 @@ Description: library for the Modbus protocol
  Ethernet connection.
  .
  This variant of the library contains customizations from
- End 2 End Technologies LLC.
+ the End 2 End Technologies LLC.
  .
  This package contains the shared library.
 
@@ -35,6 +35,6 @@ Description: development files for the Modbus protocol library
  Ethernet connection.
  .
  This variant of the library contains customizations from
- End 2 End Technologies LLC.
+ the End 2 End Technologies LLC.
  .
  This package contains the development files.
