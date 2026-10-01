@@ -49,4 +49,4 @@ it shall return -1 and set errno.
 This page is modified by End 2 End Technologies, LLC.
 
 Copyright (c) Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contributors.
-Copyright (c) End 2 End Technologies, LLC., 2025.
+Copyright (c) End 2 End Technologies, LLC., 2025-2026.

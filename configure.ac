@@ -16,8 +16,8 @@
 #
 
 m4_define([libmodbus_e2e_version_major], [1])
-m4_define([libmodbus_e2e_version_minor], [0])
-m4_define([libmodbus_e2e_version_micro], [3])
+m4_define([libmodbus_e2e_version_minor], [1])
+m4_define([libmodbus_e2e_version_micro], [0])
 
 m4_define([libmodbus_release_status],
     [m4_if(m4_eval(libmodbus_e2e_version_minor % 2), [1], [snapshot], [release])])
@@ -56,7 +56,7 @@ AC_SUBST(LIBMODBUS_E2E_VERSION)
 # ABI version
 # http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 LIBMODBUS_E2E_LD_CURRENT=0
-LIBMODBUS_E2E_LD_REVISION=0
+LIBMODBUS_E2E_LD_REVISION=1
 LIBMODBUS_E2E_LD_AGE=0
 LIBMODBUS_E2E_LT_VERSION_INFO=$LIBMODBUS_E2E_LD_CURRENT:$LIBMODBUS_E2E_LD_REVISION:$LIBMODBUS_E2E_LD_AGE
 AC_SUBST(LIBMODBUS_E2E_LT_VERSION_INFO)
