@@ -191,15 +191,15 @@ AC_ARG_ENABLE([debug],
 # Set project-specific optimization flags based on debug mode.
 # These are added via AM_CFLAGS in Makefile.am, preserving user's CFLAGS.
 AS_IF([test "x$enable_debug" = "xyes"], [
-  LIBMODBUSCFLAGS="-g -O0"
+  LIBMODBUS_E2ECFLAGS="-g -O0"
   # Clear AC_PROG_CC's default -O2 so debug mode works, unless user set CFLAGS
   AS_IF([test "x$user_set_cflags" != "xset"], [
     CFLAGS="-g"
   ])
 ], [
-  LIBMODBUSCFLAGS="-O2"
+  LIBMODBUS_E2ECFLAGS="-O2"
 ])
-AC_SUBST([LIBMODBUSCFLAGS])
+AC_SUBST([LIBMODBUS_E2ECFLAGS])
 
 AC_OUTPUT
 AC_MSG_RESULT([
@@ -212,7 +212,7 @@ AC_MSG_RESULT([
         includedir:             ${includedir}
 
         compiler:               ${CC}
-        cflags:                 ${LIBMODBUSCFLAGS} ${WARNING_CFLAGS} ${CFLAGS}
+        cflags:                 ${LIBMODBUS_E2ECFLAGS} ${WARNING_CFLAGS} ${CFLAGS}
         ldflags:                ${LDFLAGS}
 
         tests:                  ${enable_tests}
