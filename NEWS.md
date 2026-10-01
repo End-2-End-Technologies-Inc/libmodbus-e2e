@@ -1,5 +1,84 @@
 # NEWS
 
+## libmodbus-e2e 1.0.3 (2026-10-01)
+
+- Synchronized with upstream version 3.2.0.
+
+
+## libmodbus 3.2.0 (2026-07-02)
+
+- Add `modbus_proxy()` to bridge two Modbus backends (closes #70).
+- Add termios2 support to allow custom baud rates (RTU).
+- Return an exception response for READ EXCEPTION STATUS (0x07).
+- Use `EMBXILVAL` instead of `EMBMDATA` for illegal data value errors.
+- `modbus_reply`: reject NULL `req` and `mb_mapping` arguments.
+- `modbus_reply`: validate request length before reading per-function fields.
+- Fix signed integer overflow in `modbus_get_float_*()` (reported by Dominik
+  Blain and Henrik Brodin).
+- Fix signed integer overflow in the `MODBUS_GET_INT*_FROM_INT*` macros;
+  `MODBUS_GET_INT16_FROM_INT8()` now returns a signed `int16_t` in every context
+  (reported by Henrik Brodin - Trail of Bits).
+- Fix strict aliasing violation in `modbus_set_float_*()` by using `memcpy`
+  (reported by Henrik Brodin).
+- Remove dead code (Coverity CID 561619).
+- modbus-rtu: don't use `O_EXCL` when opening the device (#760).
+- WIN32 compatibility for `setsockopt()` in modbus-tcp.c (#800).
+- Check if `ai_list` is null before freeing it (#831).
+- Respect user-provided CFLAGS (closes #836).
+- Fix test to use `ctx` instead of `invalid_ctx` (closes #791, #792).
+- Update documentation of float functions (closes #838).
+- Fix documentation examples of `modbus_get_float_*` functions.
+- `modbus_reply_exception`: reject a NULL request pointer.
+- `modbus_mask_write_register`: validate that `ctx` is not NULL.
+- `modbus_write_and_read_registers`: validate `src`/`dest` pointers and counts.
+- `modbus_report_slave_id`: reject a NULL `dest` buffer.
+- `modbus_get_*_timeout`: validate that the output pointers are not NULL.
+- `modbus_mapping_new_start_address`: cap table dimensions.
+- `modbus_mapping_new`: reject negative counts.
+- `modbus_rtu_set_custom_rts`: reject a NULL callback.
+- modbus-rtu: avoid integer overflow in the RTS post-send delay.
+- modbus-rtu: check the return values of the RTS ioctl calls.
+- modbus-rtu: check the return value when saving termios settings on connect.
+- modbus-rtu: report a failure to restore termios settings on close.
+- `modbus_new_rtu`: reject negative baud rates.
+- modbus-tcp: guard `freeaddrinfo()` against NULL on resolver failure.
+- `modbus_new_tcp`: NUL-terminate the IP string when `ip` is NULL.
+- `modbus_reply`: validate FC22 request length before writing the register.
+- modbus-tcp: keep `ctx->s` consistent across failed or repeated connects (no
+  false success on a stale descriptor, no socket leak on reconnect).
+- modbus-tcp: don't override the user error recovery mode in the flush overflow
+  path.
+- modbus-tcp: fully initialize the sigaction struct for the SIGPIPE handler on
+  BSD.
+- modbus-rtu: fix the Windows serial handle lifecycle (initialize the handle,
+  guard close against a never-opened handle and reset it after close).
+- modbus-rtu: sleep the RTS turnaround delay in chunks to stay portable with
+  `usleep()`.
+- `modbus_new_rtu`: validate `data_bit` and `stop_bit` arguments.
+- `modbus_send_raw_request_tid`: reject NULL `raw_req` with `EINVAL`.
+- `modbus_get_byte_from_bits`: remove an always-false assert and clamp `nb_bits`
+  consistently in debug and release builds.
+- Preserve errno across the Windows error-recovery paths.
+- tests: don't kill the unit test server on RTU bad-CRC frames.
+- tests: fix integer overflow in the bandwidth-client rate computation.
+
+## libmodbus 3.1.12 (2026-02-13)
+
+- Fix FD_SET overflow when socket fd >= FD_SETSIZE.
+- Check dest pointer not null and nb in read functions.
+- NULL check for src and nb < 1 validation in write functions.
+- `modbus_reply`: don't compute address for FC 0x07/0x11.
+- Use O_NONBLOCK instead of deprecated O_NDELAY (closes #710).
+- Explicit cast for Coverity CID 416366.
+- Document required buffer size of `modbus_receive`.
+- Document macros for error codes corresponding to Modbus exceptions (#758).
+- Fix example of `modbus_rtu_set_serial_mode` (closes #552).
+- Test filesystem provides symlink in autogen.sh (closes #414).
+- Sync API signatures with the documentation.
+- Many documentation fixes and typo corrections.
+- Add coverage target and helper script.
+
+
 ## libmodbus-e2e 1.0.2 (2025-10-03)
 
 - Applied original Debain package patches.
@@ -21,19 +100,18 @@
 - RTU - Check CRC before filtering on slave ID
 - HAVE_NETINET_IN_H as guard around header (closes #765)
 - Use default port 502 in documentation.
-- Fix float endianness issue introduced in v3.1.8 (49af73d).
-  Thank you @ghorwin for your excellent work on the subject.
-  Closes #665, #694, #757, #770.
+- Fix float endianness issue introduced in v3.1.8 (49af73d). Thank you @ghorwin
+  for your excellent work on the subject. Closes #665, #694, #757, #770.
 - Proper display of used CFLAGS.
 - Don't build with debug flag by default anymore.
-- Check request length in `modbus_reply` when used in `memcpy`.
-  Thank you Nozomi Networks Labs Advisory for the report.
+- Check request length in `modbus_reply` when used in `memcpy`. Thank you Nozomi
+  Networks Labs Advisory for the report.
 - Fix insecure data handling. CID 416366: INTEGER_OVERFLOW found with Coverity
   Scan.
 - Remove useless cast in setsockopt call (closes #721)
 - Link against socket and nsl libs when building on SunOS. Thank you @lanurmi.
-- Update documentation about tcp-pi requiring 1 KiB of extra memory (closes #715).
-  Thank you @psychon.
+- Update documentation about tcp-pi requiring 1 KiB of extra memory (closes
+  #715). Thank you @psychon.
 - Documentation improvements by @cedricboudinet and @mhei.
 - Revert TCP checks for recovery (closes #711).
 - Don't use loop initial declaration (closes #752).
@@ -41,8 +119,8 @@
 - Don't use gai_strerror if not available.
 - Add checks for netinet/ip.h and gai_strerror (#745)
 - Log error in read input registers if debug (closes #755).
-- Fix errno value on timeout with TCP connect (closes #736, #756).
-  Thank you @kyllingstad for the issue and @psychon for the fix.
+- Fix errno value on timeout with TCP connect (closes #736, #756). Thank you
+  @kyllingstad for the issue and @psychon for the fix.
 - Free addrinfo struct on getaddrinfo() gerrors.
 - Fix doc of modbus_mapping_new_start_address (#615).
 
@@ -121,8 +199,7 @@ Thank you to @yegorich, @i-ky, @jobol, @timgates42, @anton-bondarev,
 
 ## libmodbus 3.1.6 (2019-07-31)
 
-- Fix awful typo in fix for VD-1301 vulnerability.
-    Thank you @karlp.
+- Fix awful typo in fix for VD-1301 vulnerability. Thank you @karlp.
 
 ## libmodbus 3.1.5 (2019-07-29)
 
@@ -187,25 +264,22 @@ Thank you to @yegorich, @i-ky, @jobol, @timgates42, @anton-bondarev,
 - New bswap macros for Max OSX by Jakob Bysewski.
 - Fix "wildcard address" in TCP IPv6 by Shoichi Sakane.
 - Introduce offsets in modbus mappings with modbus_mapping_new_start_address.
-    Thanks to Michael Heimpold and Stéphane Raimbault.
-- Fix address range in random-test-client.
-    Thanks to Martin Galvan.
+  Thanks to Michael Heimpold and Stéphane Raimbault.
+- Fix address range in random-test-client. Thanks to Martin Galvan.
 - Add an option to disable tests compilation by Yegor Yefremov.
-- Define MSG_DONTWAIT to MSG_NONBLOCK on AIX (#294).
-    Thanks to Fabrice Cantos.
+- Define MSG_DONTWAIT to MSG_NONBLOCK on AIX (#294). Thanks to Fabrice Cantos.
 - Fix building when byteswap.h is not defined by Tomasz Mon.
 - Add some more macros for data manipulation and documentation.
-- Remove duplicate install of modbus.h (closes #290).
-    Thanks to Daniel Sutcliffe.
+- Remove duplicate install of modbus.h (closes #290). Thanks to Daniel
+  Sutcliffe.
 - Move MIGRATION and README.md to dist_doc_DATA target.
 - Change order of few functions in modbus RTU code.
 - Add entries for modbus*rtu*[get|set]\_delay in documentation index.
 - Implemented runtime configurable RTS delay by Jimmy Bergström.
 - Add an entry in libmodbus index page for modbus_rtu_set_custom_rts.
-- Add support for user defined RTS toggle function by Jimmy
-    Bergström.
-- Added ILLEGAL_DATA_ADDRESS tests for modbus_write_register[|s].
-    Thanks to Andrey Skvortsov.
+- Add support for user defined RTS toggle function by Jimmy Bergström.
+- Added ILLEGAL_DATA_ADDRESS tests for modbus_write_register[|s]. Thanks to
+  Andrey Skvortsov.
 - Update documentation of modbus_rtu_set_rts
 - Fix rts signal switch time by Hiromasa Ihara.
 - Improve new_rtu and set_slave documentation (related to #276).
@@ -218,11 +292,11 @@ Thank you to @yegorich, @i-ky, @jobol, @timgates42, @anton-bondarev,
 - Explicit check against Modbus broadcast address.
 - Do not reply on broadcast requests (fixes #153). Thanks to Michael.
 - Add Travis support.
-- Run unit tests with standard: make check (closes #205, closes #238).
-    This patch has been developed by Andrey Skvortsov, Michael Heimpold
-    and Stéphane Raimbault.
-- modbus_send_raw_request: limit request length (fixes #207).
-    Thanks to Hanno Neuer for spotting this security flaw.
+- Run unit tests with standard: make check (closes #205, closes #238). This
+  patch has been developed by Andrey Skvortsov, Michael Heimpold and Stéphane
+  Raimbault.
+- modbus_send_raw_request: limit request length (fixes #207). Thanks to Hanno
+  Neuer for spotting this security flaw.
 - Add new contributors to AUTHORS
 - Introduce SPDX license identifiers. Thanks to Michael Heimpold.
 
@@ -240,22 +314,20 @@ modbus_set_response_timeout to ease writing of language bindings.
 - Rewrite documentation building system
 - Fix timeouts in unit tests
 - Don't flush on illegal address errors in single write functions
-- Fix compilation on compilers not supporting c99 mode.
-    Thanks to Michael Heimpold.
+- Fix compilation on compilers not supporting c99 mode. Thanks to Michael
+  Heimpold.
 - Update license for the tests in Debian packaging (#221)
 - Move check of device earlier to avoid a free call
 - Unit test for baud rate check and error message.
-- Fix crash modbus_new_rtu when baud is 0.
-    Thank you to Daniel Schürmann.
-- Removed function prototype without implementation
-    Thank you Andrej Skvortzov.
+- Fix crash modbus_new_rtu when baud is 0. Thank you to Daniel Schürmann.
+- Removed function prototype without implementation Thank you Andrej Skvortzov.
 - Switch test programs to a BSD license
 - Fix remote buffer overflow vulnerability on write requests
 - Avoid twice connect() in source code (closes #194)
-- Fix compilation with MinGW (GCC 4.8.1) under Win7 (closes #163)
-    Thank you MarjanTomas and SwissKnife.
-- Fix TCP IPv4 modbus_connect() on win32 (closes #100 and #165)
-    Thank you Petr Gladkiy and Marjan Tomas.
+- Fix compilation with MinGW (GCC 4.8.1) under Win7 (closes #163). Thank you
+  MarjanTomas and SwissKnife.
+- Fix TCP IPv4 modbus_connect() on win32 (closes #100 and #165). Thank you Petr
+  Gladkiy and Marjan Tomas.
 - Fix 24a05ebd3c0 - win32: init of modbus_tcp_pi_listen (#187)
 - INADDR\_\* macros are defined in host byte order
 - Filter of IP addresses in IPv4 server (closes #190)
@@ -263,19 +335,18 @@ modbus_set_response_timeout to ease writing of language bindings.
 - Define and public export of MODBUS_MAX_PDU_LENGTH (closes #167)
 - Truncate data from response in report_slave_id to new max arg (closes #167)
 - Fix response timeout modification on connect (closes #80)
-- New API to set/get response and byte timeouts.
-    New unit tests and updated documentation.
+- New API to set/get response and byte timeouts. New unit tests and updated
+  documentation.
 - Export Modbus function codes supported by libmodbus
 - Fix bandwidth-server-one (closes #152)
 - Check debug flag in RTU code
-- Remove warnings caused by shadowed 'index' variable.
-    Thanks to Åke Forslund.
+- Remove warnings caused by shadowed 'index' variable. Thanks to Åke Forslund.
 - Use accept4 in TCP PI if available
 - Add documentation for tcp[_pi]\_accept (closes #31)
 - Fix mistake in modbus_tcp_listen documentation
 - Add documentation for modbus_tcp_pi_listen
-- Fix for MinGW and Windows (#144, #169, #175, #180, #181, #187)
-    Thanks to Marjan Tomas.
+- Fix for MinGW and Windows (#144, #169, #175, #180, #181, #187). Thanks to
+  Marjan Tomas.
 - Many other fixes (#134, #157, #158, #183, #184) and improvements.
 
 ## libmodbus 3.1.1 (2013-10-06)
@@ -287,20 +358,19 @@ sequences. Windows support still broken.
 - Fix remote buffer overflow vulnerability (closes #25, #105)
 - Explain how to define response timeouts when many RTU slaves
 - Fix receiving of incorrect queries in write_single and mask_write_register
-    Thanks to James Nutaro.
-- Check return value of autoreconf.
-    Thanks to Lauri Nurmi
+  Thanks to James Nutaro.
+- Check return value of autoreconf. Thanks to Lauri Nurmi
 - Constant for broacast and test ordering
 - Fix the fix of device string check
-- Various changes to try to improve *broken* Windows support
+- Various changes to try to improve _broken_ Windows support
 - Try to fix MinGW compilation
 - Portable use of bswap_32
 - Improve support of MacOS X
 - Fix socket value on init/close
 - Returns -1 on invalid mode in modbus_rtu_set_rts
 - Protect all public functions against invalid context
-- Sleep for delay of response timeout before reconnect (closes #77).
-    Thanks to Karl Palsson.
+- Sleep for delay of response timeout before reconnect (closes #77). Thanks to
+  Karl Palsson.
 - Baud rate until 4,000,000 (POSIX), 1,000,000 (Windows) (closes #93)
 - New modbus_get|set_float_dcba to get|set float in inversed byte order
 - Remove unsupported -Wtype-limits for GCC < 4.3.5 (closes #109)
@@ -308,21 +378,19 @@ sequences. Windows support still broken.
 - Fix alignment problem on ARMv5 platform
 - Improvement to Debian package. Thanks to Alexander Klauer.
 - Improve support of VS 2005. Thanks to Petr Gladkiy.
-- Add documentation for modbus_mask_write_register (closes #91).
-    Thanks to Martijn de Gouw.
-- Avoid C99 declaration in win32 section code (closes #92).
-    Thanks to oldfaber and endrelovas.
-- Add a windows scripting host configure file.
-    Thanks to oldfaber and Stéphane Raimbault.
+- Add documentation for modbus_mask_write_register (closes #91). Thanks to
+  Martijn de Gouw.
+- Avoid C99 declaration in win32 section code (closes #92). Thanks to oldfaber
+  and endrelovas.
+- Add a windows scripting host configure file. Thanks to oldfaber and Stéphane
+  Raimbault.
 - Fix typo in modbus_strerror documentation. Thanks to Mirko Rajkovaca.
-- Rename reserved C++ keywords of modbus_mask_write_register.
-    Thanks Tobias Doerffel.
+- Rename reserved C++ keywords of modbus_mask_write_register. Thanks Tobias
+  Doerffel.
 - Another quick workaround for deficient OS (closes #63)
 - Add support for Mask Write Register
-- Fix missing close on socket in random-test-server.
-    Thanks to Damian Zieliński.
-- Use nonblocking sockets on Win32 and OS X/iOS too.
-    Thanks to Julian Raschke.
+- Fix missing close on socket in random-test-server. Thanks to Damian Zieliński.
+- Use nonblocking sockets on Win32 and OS X/iOS too. Thanks to Julian Raschke.
 - Fix all compilations warnings spotted by new compilation flags
 - Major update of build system
 - Calculate RTS activation time by send length
@@ -332,8 +400,7 @@ sequences. Windows support still broken.
 - Fix missing argument in synopsis section of modbus_rtu_set_serial_mode
 - Fix wrong constant names to create version number
 - More compilation fixes for Windows by oldfaber.
-- Fix wrong constant names to create version number.
-    Thanks to Denis Davydov.
+- Fix wrong constant names to create version number. Thanks to Denis Davydov.
 
 ## libmodbus 3.1.0 (2012-06-22)
 
@@ -357,13 +424,12 @@ RTS flow control.
 - Exception response on report slave ID wasn't detected (closes #27)
 - Provides a way to disable the byte timeout (Alex Stapleton)
 - Added slave ID check for response messages (Alex Stapleton)
-- RTS flow control with modbus_rtu_set_rts and modbus_rtu_get_rts
-    functions by Torello Querci <tquerci@gmail.com> and Stéphane Raimbault.
+- RTS flow control with modbus_rtu_set_rts and modbus_rtu_get_rts functions by
+  Torello Querci <tquerci@gmail.com> and Stéphane Raimbault.
 
 ## libmodbus 3.0.8 (2019-07-31)
 
-- Fix awful typo in fix for VD-1301 vulnerability.
-    Thank you @karlp.
+- Fix awful typo in fix for VD-1301 vulnerability. Thank you @karlp.
 
 ## libmodbus 3.0.7 (2019-07-29)
 
@@ -385,76 +451,69 @@ RTS flow control.
 
 - autogen.sh creates symlinks instead of copies
 - Add missing m4 directory (closes #103)
-- Fix alignment problem on ARMv5 platform
-    Thanks to Alexander Dahl
-- Remove useless test on error_recovery argument
-    Thanks to Carlos Tangerino
+- Fix alignment problem on ARMv5 platform Thanks to Alexander Dahl
+- Remove useless test on error_recovery argument Thanks to Carlos Tangerino
 
 ## libmodbus 3.0.3 (2012-05-25)
 
 - Fix another Visual C++ 2008/2010 deficiency (closes #53)
 - Add -lsocket to compile on QNX
-- Fix TCP PI init under Windows.
-    Thanks to oldfaber.
-- Fix a missing free in random-test-client
-    Thanks again to Stefan Finzel.
-- Fix OMG bug in modbus_mapping_free not freeing memory.
-    Thanks to Stefan Finzel for the bug report.
-- Fix semicolon typo and unistd.h include under Windows.
-    Thanks to Andrew Kravchuk.
+- Fix TCP PI init under Windows. Thanks to oldfaber.
+- Fix a missing free in random-test-client Thanks again to Stefan Finzel.
+- Fix OMG bug in modbus_mapping_free not freeing memory. Thanks to Stefan Finzel
+  for the bug report.
+- Fix semicolon typo and unistd.h include under Windows. Thanks to Andrew
+  Kravchuk.
 
 ## libmodbus 3.0.2 (2012-01-16)
 
 - Update Debian package
 - Documentation fixes and additions
-- Add missing C++ macros in public headers.
-    Thanks to Bernhard Agthe.
-- Protects modbus_mapping_free against NULL argument.
-    Thanks to Andrea Mattia
+- Add missing C++ macros in public headers. Thanks to Bernhard Agthe.
+- Protects modbus_mapping_free against NULL argument. Thanks to Andrea Mattia
 - Fix check on file doc/libmodbus.7 in acinclude.m4 (closes #28)
-- Close file descriptor when the settings don't apply in RTU.
-    Original patch provided by Thomas Stalder.
+- Close file descriptor when the settings don't apply in RTU. Original patch
+  provided by Thomas Stalder.
 - unit-test.h is now generated to avoid config.h dependency.
-- Request for Windows Sockets specification version 2.2 instead of 2.0
-    Thanks to Pavel Mazniker for the report.
+- Request for Windows Sockets specification version 2.2 instead of 2.0 Thanks to
+  Pavel Mazniker for the report.
 
 ## libmodbus 3.0.1 (2011-07-18)
 
 - Avoid useless serial_mode integer when TIOCSRS485 isn't supported
 - Fix compilation failure on Windows (RS485 support) by Tobias Doerffel
-    <tobias.doerffel@gmail.com>
+  <tobias.doerffel@gmail.com>
 - Properly check TIOCSRS485 define by Matthijs Kool
 - Rename package to libmodbus5 to fix lintian warning
 
 ## libmodbus 3.0.0 (2011-07-11)
 
-- Revert libmodbus licence from LGPLv3 to LGPLv2.1 to avoid
-    incompatibility with GPLv2 program. This change has been approved
-    by Tobias Doerffel, Florian octo Forster and Hannu Vuolasaho.
+- Revert libmodbus licence from LGPLv3 to LGPLv2.1 to avoid incompatibility with
+  GPLv2 program. This change has been approved by Tobias Doerffel, Florian octo
+  Forster and Hannu Vuolasaho.
 - Enable RS485 support only when available
 - Export modbus_set/get_serial_mode functions on all platforms
 - API change for read/write multiple registers function:
-    - modbus_read_and_write_registers -> modbus_write_and_read_registers
-        The function name was confusing because the write operation is performed
-        before the read. Take care to swap the arguments in the migration process.
+    - modbus_read_and_write_registers -> modbus_write_and_read_registers The
+      function name was confusing because the write operation is performed
+      before the read. Take care to swap the arguments in the migration process.
 - Documentation of modbus*write_and_read_registers, modbus_mapping_new/free,
-    report_slave_id. modbus_get_byte_from_bits, modbus_set_bits_from_byte(s),
-    modbus*[gs]et_float, modbus_reply and modbus_reply_exception.
+  report_slave_id. modbus_get_byte_from_bits, modbus_set_bits_from_byte(s),
+  modbus*[gs]et_float, modbus_reply and modbus_reply_exception.
 - Enhanced report slave ID
 - New RPM spec file to package documentation and development files
 
 ## libmodbus 2.9.4 (2011-06-05)
 
-- IPv6 support
-    Make the TCP implementation "protocol independent" by Florian Forster
-    and Stéphane Raimbault.
-- Fix compilation on Windows 7 (x64) with MinGW/MSYS and GCC 4.5
-    Reported by Patsy Kaye.
+- IPv6 support Make the TCP implementation "protocol independent" by Florian
+  Forster and Stéphane Raimbault.
+- Fix compilation on Windows 7 (x64) with MinGW/MSYS and GCC 4.5 Reported by
+  Patsy Kaye.
 - Documentation of libmodbus functions with AsciiDoc (man and HTML) by Stéphane
-    Raimbault
+  Raimbault
 - Avoid an iteration in flush function
 - New functions to send and receive raw requests (modbus_send_raw_request,
-    modbus_receive_confirmation)
+  modbus_receive_confirmation)
 - Fix flush function of TCP backend on Windows
 - API changes for server/slave:
     - modbus_receive doesn't take socket/fd argument anymore
@@ -466,30 +525,27 @@ RTS flow control.
     - modbus_set_timeout_end -> modbus_set_byte_timeout
 - Fix longstanding limitation of server to wait forever
 - New functions modbus_set/get_serial_mode by Manfred Gruber and Stéphane
-    Raimbault for RS485 communications
-- Improved recovery mode (see modbus_set_error_recovery documentation) for
-    data link and protocol errors.
-- Fix compilation issue with Microsoft Visual Studio 2008.
-    Reported by Allan Cornet.
+  Raimbault for RS485 communications
+- Improved recovery mode (see modbus_set_error_recovery documentation) for data
+  link and protocol errors.
+- Fix compilation issue with Microsoft Visual Studio 2008. Reported by Allan
+  Cornet.
 
 ## libmodbus 2.9.3 (2011-01-14)
 
-- Major rewriting of the message reading (no more timeouts on exception)
-    by Stéphane Raimbault
+- Major rewriting of the message reading (no more timeouts on exception) by
+  Stéphane Raimbault
 - New function to reply to an indication with an exception message
-    modbus_reply_exception()
+  modbus_reply_exception()
 - New function modbus_get_header_length(modbus_t \*ctx)
 - New functions to manipulate data:
     - MODBUS_GET_INT32_FROM_INT16
     - MODBUS_GET_INT16_FROM_INT8
     - MODBUS_SET_INT16_TO_INT8
 - Fix GH-2. Read/write were swapped in \_FC_READ_AND_WRITE_REGISTERS
-- Install an ignore handler for SIGPIPE on \*BSD
-    Original patch by Jason Oster.
-- Fix closing of Win32 socket.
-    Reported by Petr Parýzek.
-- Fix unit identifier not copied by the TCP server.
-    Reported by Antti Manninen.
+- Install an ignore handler for SIGPIPE on \*BSD Original patch by Jason Oster.
+- Fix closing of Win32 socket. Reported by Petr Parýzek.
+- Fix unit identifier not copied by the TCP server. Reported by Antti Manninen.
 - Fix missing modbus_flush() in unit tests
 - Fixes for OpenBSD by Barry Grumbine and Jason Oster
 
@@ -516,19 +572,18 @@ RTS flow control.
 - Report slave ID server side
 - OpenBSD support by Anibal Limón.
 - New read and write registers function by Hannu Vuolasaho.
-- Versioning infrastructure
-    Inspired by the Clutter project and the work done by Florian Forster.
-- Fix the broadcast constant (255 -> 0)
-    Reported by David Olivari.
+- Versioning infrastructure Inspired by the Clutter project and the work done by
+  Florian Forster.
+- Fix the broadcast constant (255 -> 0). Reported by David Olivari.
 - Fix #463299 - New functions to define the timeouts of begin and end of trame
-    Original patch by Sisyph (eric-paul).
-- Fix #591142 - Slave id check should be disabled in TCP connection
-    Reported by aladdinwu.
+  Original patch by Sisyph (eric-paul).
+- Fix #591142 - Slave id check should be disabled in TCP connection Reported by
+  aladdinwu.
 
 ## libmodbus 2.1.0 (2010-03-24)
 
 - New API to read and write float values by Stéphane Raimbault and Florian
-    Forster.
+  Forster.
 - New API for slave server (see MIGRATION)
 - New slave server able to handle multiple connections
 - Slave only replies to broadcast queries or queries with its slave ID
@@ -536,43 +591,40 @@ RTS flow control.
 - modbus_param_t is smaller (2 int removed)
 - Better error management and SIGPIPE signal is blocked
 - Faster
-- Fix #333455 - Cygwin IPTOS_LOWDELAY not supported on cygwin
-    Reported by Jeff Laughlin and Yishin Li.
-- Fix #375926 - modbus.c:164: error: `MSG_DONTWAIT' undeclared
-    Reported and tested by Yishin Li.
-- Fix #378981 - CRC error on RTU response doesn't return negative value
-    Reported by Henrik Munktell.
-- Fix report slave ID request
-    Patch (bzr) provided by Paul Fertser.
+- Fix #333455 - Cygwin IPTOS_LOWDELAY not supported on cygwin. Reported by Jeff
+  Laughlin and Yishin Li.
+- Fix #375926 - modbus.c:164: error: `MSG_DONTWAIT' undeclared. Reported and
+  tested by Yishin Li.
+- Fix #378981 - CRC error on RTU response doesn't return negative value.
+  Reported by Henrik Munktell.
+- Fix report slave ID request Patch (bzr) provided by Paul Fertser.
 - Fix #425604 - Conditional jump or move depends on uninitialised value(s)
-    Occurs on first occurrence of slave timeout.
-    Reported by Henrik Munktell.
-- Fix #457200 - FreeBSD support
-    Patch provided by Norbert Koch.
+  Occurs on first occurrence of slave timeout. Reported by Henrik Munktell.
+- Fix #457200 - FreeBSD support Patch provided by Norbert Koch.
 
 Other changes:
 
-- The code is now published and developed on <http://github.com/stephane/libmodbus>
+- The code is now published and developed on
+  <http://github.com/stephane/libmodbus>
 - Waf support has been removed
 
 ## libmodbus 2.0.3 (2009-03-22)
 
-- Fix CRC error when a slave RTU send a response.
-    Thanks to Justin Carroll to have reported and tested my patch.
+- Fix CRC error when a slave RTU send a response. Thanks to Justin Carroll to
+  have reported and tested my patch.
 - Remove an assignment in compute_response_length()
 - Remove duplicate counter in read_io_status()
-- Fix #274511 reported by 'Kylesch'
-    Invalid error check in modbus_init_listen_tcp
+- Fix #274511 reported by 'Kylesch' Invalid error check in
+  modbus_init_listen_tcp
 
 ## libmodbus 2.0.2 (2008-08-10)
 
-- Fix a bug reported by email by Davide Pippa
-    The function modbus_receive must check the number of values
-    indicated in the response accordingly to the query.
-- Fix #241006 reported by Jesus Hernandez Tapia
-    modbus_check_response() crashes on an invalid exception code
-- Reduce the number of function calls (read_reg_response and
-    preset_response have been removed)
+- Fix a bug reported by email by Davide Pippa The function modbus_receive must
+  check the number of values indicated in the response accordingly to the query.
+- Fix #241006 reported by Jesus Hernandez Tapia modbus_check_response() crashes
+  on an invalid exception code
+- Reduce the number of function calls (read_reg_response and preset_response
+  have been removed)
 - Add a new unit test for bad response
 - Catch the timeout even if the length is equal to a exception trame
 - Test only msg_length_computed on change
@@ -581,75 +633,69 @@ Other changes:
 ## libmodbus 2.0.1 (2008-07-02)
 
 - Include libmodbus.spec in the tarball
-- Fix #241006 reported by Jesus Hernandez Tapia
-    modbus_check_response() crashes on an invalid exception code
+- Fix #241006 reported by Jesus Hernandez Tapia modbus_check_response() crashes
+  on an invalid exception code
 
 ## libmodbus 2.0.0 (2008-05-18)
 
-- Slave API
-    <https://blueprints.launchpad.net/libmodbus/+spec/slave-api>
+- Slave API <https://blueprints.launchpad.net/libmodbus/+spec/slave-api>
 - No more glib dependency
-    <https://blueprints.launchpad.net/libmodbus/+spec/glib-dependency>
+  <https://blueprints.launchpad.net/libmodbus/+spec/glib-dependency>
 - Unit testing and many test programs
 - Waf build support
-    <https://blueprints.launchpad.net/libmodbus/+spec/waf-support>
+  <https://blueprints.launchpad.net/libmodbus/+spec/waf-support>
 - MacOS X support by Matthew Butch
-    <https://blueprints.launchpad.net/libmodbus/+spec/macosx-support>
+  <https://blueprints.launchpad.net/libmodbus/+spec/macosx-support>
 - Unit testing (unit-test-slave and unit-test-master)
 - Port number is now defined at initialisation by Dirk Reusch
-- Better memory management (uint8_t \*data and packing of
-    modbus_param_t)
+- Better memory management (uint8_t \*data and packing of modbus_param_t)
 - Better error management
 - Declare many static functions and const arrays
 - Enhance an integer division
 - The GNU licences LGPL and GPL are in version 3
 - Debian and RPM packages (#224496)
 - Many cleanups
-- Fix #159443 reported by Stefan Bisanz
-    Index of incoming data in force multiple coils function
-- Fix #161989 reported by Konstantinos Togias
-    Serial device paths more than 10 chars long (eg. /dev/ttyUSB0) don't
-    fit to modbus_param_t -> device char[11] var.
-- Fix #188189 reported by Chris Hellyar
-    Compute_response_size() no entry for read_input_status()
-- Fix #191039 reported by Todd Denniston
-    modbus.h is not installed at prefix.
-- Fix #211460 reported by Todd Denniston
-    With TCP, automatic reconnect on error may not be desired.
-- Fix #224485 reported by Todd Denniston
-    libmodbus does not link with c++ code.
-- Fix #224496 reported by Todd Denniston
-    It is easier to install on rpm based systems with a spec file.
+- Fix #159443 reported by Stefan Bisanz Index of incoming data in force multiple
+  coils function
+- Fix #161989 reported by Konstantinos Togias Serial device paths more than 10
+  chars long (eg. /dev/ttyUSB0) don't fit to modbus_param_t -> device char[11]
+  var.
+- Fix #188189 reported by Chris Hellyar Compute_response_size() no entry for
+  read_input_status()
+- Fix #191039 reported by Todd Denniston modbus.h is not installed at prefix.
+- Fix #211460 reported by Todd Denniston With TCP, automatic reconnect on error
+  may not be desired.
+- Fix #224485 reported by Todd Denniston libmodbus does not link with c++ code.
+- Fix #224496 reported by Todd Denniston It is easier to install on rpm based
+  systems with a spec file.
 
 ## libmodbus 1.2.5 (2008-05-18)
 
-- Fix #224485 reported by Todd Denniston
-    libmodbus does not link with c++ code.
+- Fix #224485 reported by Todd Denniston libmodbus does not link with c++ code.
 
 ## libmodbus 1.2.4 (2008-03-14)
 
-- Fix #191039 reported by Todd Denniston
-    modbus.h is not installed at prefix.
+- Fix #191039 reported by Todd Denniston modbus.h is not installed at prefix.
 
 ## libmodbus 1.2.3 (2008-02-03)
 
-- Fix #188189 reported by Chris Hellyar
-    Compute_response_size() no entry for read_input_status()
-- Fix #181887 reported by Jesus Hernandez Tapia.
-    Slave address in build_request_packet_tcp() is hardcoded as 0xFF.
+- Fix #188189 reported by Chris Hellyar Compute_response_size() no entry for
+  read_input_status()
+- Fix #181887 reported by Jesus Hernandez Tapia. Slave address in
+  build_request_packet_tcp() is hardcoded as 0xFF.
 
 ## libmodbus 1.2.2 (2007-11-12)
 
-- Fix #161989 reported by Konstantinos Togias
-    Serial device paths more than 10 chars long (eg. /dev/ttyUSB0) don't
-    fit to modbus_param_t -> device char[11] var.
-- Structure is also bit better 'packed' to conserve memory (see the
-    trunk for a real enhancement).
+- Fix #161989 reported by Konstantinos Togias Serial device paths more than 10
+  chars long (eg. /dev/ttyUSB0) don't fit to modbus_param_t -> device char[11]
+  var.
+- Structure is also bit better 'packed' to conserve memory (see the trunk for a
+  real enhancement).
 
 ## libmodbus 1.2.1 (2007-11-02)
 
-- Fix #159443 reported by Stefan Bisanz
-    Index of incoming data in force multiple coils function
+- Fix #159443 reported by Stefan Bisanz Index of incoming data in force multiple
+  coils function
 - Deleted useless code in check_crc16()
 - Untabify source code
 - Changed author's email to Stéphane Raimbault

@@ -10,7 +10,7 @@ modbus_write_and_read_registers - write and read many registers in a single tran
 int modbus_write_and_read_registers(
     modbus_t *ctx,
     int write_addr, int write_nb, const uint16_t *src,
-    int read_addr, int read_nb, const uint16_t *dest
+    int read_addr, int read_nb, uint16_t *dest
 );
 ```
 
@@ -34,7 +34,8 @@ it shall return -1 and set errno.
 
 ## Errors
 
-- *EMBMDATA*, too many registers requested, Too many registers to write
+- *EINVAL*, the context is NULL, `src` or `dest` is NULL, or `write_nb` / `read_nb` is less than 1.
+- *EMBXILVAL*, too many registers requested, Too many registers to write
 
 ## See also
 

@@ -8,10 +8,10 @@ modbus_mapping_new_start_address - allocate four arrays of bits and registers ac
 
 ```c
 modbus_mapping_t* modbus_mapping_new_start_address(
-    int start_bits, int nb_bits,
-    int start_input_bits, int nb_input_bits,
-    int start_registers, int nb_registers,
-    int start_input_registers, int nb_input_registers);
+    unsigned int start_bits, unsigned int nb_bits,
+    unsigned int start_input_bits, unsigned int nb_input_bits,
+    unsigned int start_registers, unsigned int nb_registers,
+    unsigned int start_input_registers, unsigned int nb_input_registers);
 ```
 
 ## Description
@@ -47,6 +47,11 @@ mb_mapping->tab_registers[0] = 42;
 If it isn't necessary to allocate an array for a specific type of data, you can
 pass the zero value in argument, the associated pointer will be NULL.
 
+Because the Modbus address space is 16-bit, each of the `nb_bits`,
+`nb_input_bits`, `nb_registers` and `nb_input_registers` arguments must not
+exceed 65536 entries. Larger values are rejected to avoid excessively large
+allocations driven by untrusted configuration.
+
 This function is convenient to handle requests in a Modbus server/slave.
 
 ## Return value
@@ -56,6 +61,7 @@ successful. Otherwise it shall return NULL and set errno.
 
 ## Errors
 
+- *EINVAL*, one of the requested array dimensions exceeds 65536 entries.
 - *ENOMEM*, not enough memory.
 
 ## Example

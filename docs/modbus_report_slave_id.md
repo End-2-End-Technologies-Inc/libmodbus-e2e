@@ -38,6 +38,10 @@ response data was truncated.
 
 Otherwise it shall return -1 and set errno.
 
+## Errors
+
+- *EINVAL*, the context is NULL, `dest` is NULL, or `max_dest` is not positive.
+
 ## Example
 
 ```c

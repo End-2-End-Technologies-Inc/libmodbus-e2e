@@ -14,7 +14,6 @@
 #endif
 
 #include <string.h>
-#include <assert.h>
 
 #if defined(_WIN32)
 #  include <winsock2.h>
@@ -64,9 +63,8 @@ uint8_t modbus_get_byte_from_bits(const uint8_t *src, int idx, unsigned int nb_b
     unsigned int i;
     uint8_t value = 0;
 
+    /* A byte contains 8 bits at most */
     if (nb_bits > 8) {
-        /* Assert is ignored if NDEBUG is set */
-        assert(nb_bits < 8);
         nb_bits = 8;
     }
 
@@ -92,7 +90,11 @@ float modbus_get_float_abcd(const uint16_t *src)
     d = (src[1] >> 0) & 0xFF; // low byte of second word
 
     // we assemble 32bit integer always in abcd order via shift operations
-    i = (a << 24) | (b << 16) | (c << 8) | (d << 0);
+    // Cast to uint32_t before shifting: a..d promote to signed int, and
+    // "a << 24" with a >= 0x80 would overflow a 32-bit signed int (undefined
+    // behavior). Assembling in unsigned width keeps it well-defined. The same
+    // applies to the identical assembly in the dcba/badc/cdab variants below.
+    i = ((uint32_t) a << 24) | ((uint32_t) b << 16) | ((uint32_t) c << 8) | d;
     memcpy(&f, &i, 4);
 
     return f;
@@ -112,7 +114,7 @@ float modbus_get_float_dcba(const uint16_t *src)
     a = (src[1] >> 0) & 0xFF;
 
     // we assemble 32bit integer always in abcd order via shift operations
-    i = (a << 24) | (b << 16) | (c << 8) | (d << 0);
+    i = ((uint32_t) a << 24) | ((uint32_t) b << 16) | ((uint32_t) c << 8) | d;
     memcpy(&f, &i, 4);
 
     return f;
@@ -132,7 +134,7 @@ float modbus_get_float_badc(const uint16_t *src)
     c = (src[1] >> 0) & 0xFF;
 
     // we assemble 32bit integer always in abcd order via shift operations
-    i = (a << 24) | (b << 16) | (c << 8) | (d << 0);
+    i = ((uint32_t) a << 24) | ((uint32_t) b << 16) | ((uint32_t) c << 8) | d;
     memcpy(&f, &i, 4);
 
     return f;
@@ -152,7 +154,7 @@ float modbus_get_float_cdab(const uint16_t *src)
     b = (src[1] >> 0) & 0xFF;
 
     // we assemble 32bit integer always in abcd order via shift operations
-    i = (a << 24) | (b << 16) | (c << 8) | (d << 0);
+    i = ((uint32_t) a << 24) | ((uint32_t) b << 16) | ((uint32_t) c << 8) | d;
     memcpy(&f, &i, 4);
 
     return f;
@@ -167,12 +169,14 @@ float modbus_get_float(const uint16_t *src)
 /* Set a float to 4 bytes for Modbus w/o any conversion (ABCD) */
 void modbus_set_float_abcd(float f, uint16_t *dest)
 {
-    // The straight-forward type conversion won't work because of type-punned pointer aliasing warning
-    // uint32_t i = *(uint32_t*)(&f);
-    float * fptr = &f;
-    uint32_t * iptr = (uint32_t *)fptr;
-    uint32_t i = *iptr;
+    // Use memcpy for the type conversion: accessing a float through a uint32_t
+    // lvalue (the old *(uint32_t*)&f trick) violates strict aliasing and is
+    // undefined behavior. This mirrors the modbus_get_float_* functions and
+    // compiles to the same load. Same applies to the dcba/badc/cdab variants.
+    uint32_t i;
     uint8_t a, b, c, d;
+
+    memcpy(&i, &f, 4);
 
     a = (i >> 24) & 0xFF;
     b = (i >> 16) & 0xFF;
@@ -186,10 +190,10 @@ void modbus_set_float_abcd(float f, uint16_t *dest)
 /* Set a float to 4 bytes for Modbus with byte and word swap conversion (DCBA) */
 void modbus_set_float_dcba(float f, uint16_t *dest)
 {
-    float * fptr = &f;
-    uint32_t * iptr = (uint32_t *)fptr;
-    uint32_t i = *iptr;
+    uint32_t i;
     uint8_t a, b, c, d;
+
+    memcpy(&i, &f, 4);
 
     a = (i >> 24) & 0xFF;
     b = (i >> 16) & 0xFF;
@@ -203,10 +207,10 @@ void modbus_set_float_dcba(float f, uint16_t *dest)
 /* Set a float to 4 bytes for Modbus with byte swap conversion (BADC) */
 void modbus_set_float_badc(float f, uint16_t *dest)
 {
-    float * fptr = &f;
-    uint32_t * iptr = (uint32_t *)fptr;
-    uint32_t i = *iptr;
+    uint32_t i;
     uint8_t a, b, c, d;
+
+    memcpy(&i, &f, 4);
 
     a = (i >> 24) & 0xFF;
     b = (i >> 16) & 0xFF;
@@ -220,10 +224,10 @@ void modbus_set_float_badc(float f, uint16_t *dest)
 /* Set a float to 4 bytes for Modbus with word swap conversion (CDAB) */
 void modbus_set_float_cdab(float f, uint16_t *dest)
 {
-    float * fptr = &f;
-    uint32_t * iptr = (uint32_t *)fptr;
-    uint32_t i = *iptr;
+    uint32_t i;
     uint8_t a, b, c, d;
+
+    memcpy(&i, &f, 4);
 
     a = (i >> 24) & 0xFF;
     b = (i >> 16) & 0xFF;

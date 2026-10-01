@@ -32,6 +32,7 @@ it shall return NULL and set errno.
 
 ## Errors
 
+- *EINVAL*, one of the requested array dimensions exceeds 65536 entries.
 - *ENOMEM*, not enough memory.
 
 ## Example

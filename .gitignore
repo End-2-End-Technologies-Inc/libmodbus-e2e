@@ -46,6 +46,8 @@ tests/bandwidth-server-many-up
 tests/bandwidth-server-one
 tests/random-test-client
 tests/random-test-server
+tests/proxy-test-client
+tests/proxy-test-server
 tests/unit-test-client
 tests/unit-test-server
 tests/version

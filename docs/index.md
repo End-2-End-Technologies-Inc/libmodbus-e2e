@@ -118,7 +118,7 @@ Modbus devices:
 
 - [modbus_connect](modbus_connect.md) establishes a connection.
 - [modbus_close](modbus_close.md) closes a connection.
-- [modbus_flush](modbus_flush.md) flushed a connection.
+- [modbus_flush](modbus_flush.md) flushes a connection.
 
 In RTU, you should define the slave ID of your client with
 [modbus_set_slave](modbus_set_slave.md).
@@ -187,6 +187,10 @@ Reply:
 - [modbus_reply](modbus_reply.md)
 - [modbus_reply_exception](modbus_reply_exception.md)
 
+Proxy:
+
+- [modbus_proxy](modbus_proxy.md)
+
 ## Advanced functions
 
 Timeout settings:
@@ -215,12 +219,18 @@ Macros for data manipulation:
 
 - `MODBUS_GET_HIGH_BYTE(data)`, extracts the high byte from a byte
 - `MODBUS_GET_LOW_BYTE(data)`, extracts the low byte from a byte
-- `MODBUS_GET_INT64_FROM_INT16(tab_int16, index)`, builds an int64 from the four first int16 starting at tab_int16[index]
-- `MODBUS_GET_INT32_FROM_INT16(tab_int16, index)`, builds an int32 from the two first int16 starting at tab_int16[index]
-- `MODBUS_GET_INT16_FROM_INT8(tab_int8, index)`, builds an int16 from the two first int8 starting at tab_int8[index]
+- `MODBUS_GET_INT64_FROM_INT16(tab_int16, index)`, builds a signed int64 from the four first int16 starting at tab_int16[index]
+- `MODBUS_GET_INT32_FROM_INT16(tab_int16, index)`, builds a signed int32 from the two first int16 starting at tab_int16[index]
+- `MODBUS_GET_INT16_FROM_INT8(tab_int8, index)`, builds a signed int16 from the two first int8 starting at tab_int8[index]
 - `MODBUS_SET_INT16_TO_INT8(tab_int8, index, value)`, set an int16 value into the two first bytes starting at tab_int8[index]
 - `MODBUS_SET_INT32_TO_INT16(tab_int16, index, value)`, set an int32 value into the two first int16 starting at tab_int16[index]
 - `MODBUS_SET_INT64_TO_INT16(tab_int16, index, value)`, set an int64 value into the four first int16 starting at tab_int16[index]
+
+The `MODBUS_GET_INT*_FROM_INT*` macros return signed integers: an input whose
+most significant bit is set is returned as a negative value. Since 3.2.0,
+`MODBUS_GET_INT16_FROM_INT8()` returns a proper `int16_t` in every context; a
+value `>= 0x8000` is therefore negative. Previously it could evaluate to a
+positive `int` when the result was used outside a 16-bit assignment.
 
 Handling of bits and bytes:
 

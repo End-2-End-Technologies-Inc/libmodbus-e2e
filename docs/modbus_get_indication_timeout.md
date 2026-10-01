@@ -32,6 +32,10 @@ uint32_t to_usec;
 modbus_get_indication_timeout(ctx, &to_sec, &to_usec);
 ```
 
+## Errors
+
+- *EINVAL*, the context is NULL or one of `to_sec` / `to_usec` is NULL.
+
 ## See also
 
 - [modbus_set_indication_timeout](modbus_set_indication_timeout.md)

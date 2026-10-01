@@ -1,7 +1,8 @@
 # Copyright © Stéphane Raimbault <stephane.raimbault@gmail.com> and/or contibutors.
-# Copyright © End 2 End Technologies, LLC., 2025.
+# Copyright © End 2 End Technologies, LLC., 2025-2026.
 
-EXTRA_DIST = README.md unit-tests.sh LICENSE
+EXTRA_DIST = README.md unit-tests.sh proxy-tests.sh LICENSE
+
 
 noinst_PROGRAMS = \
 	bandwidth-server-one \
@@ -11,6 +12,8 @@ noinst_PROGRAMS = \
 	random-test-client \
 	unit-test-server \
 	unit-test-client \
+	proxy-test-server \
+	proxy-test-client \
 	version
 
 common_ldflags = \
@@ -37,6 +40,12 @@ unit_test_server_LDADD = $(common_ldflags)
 unit_test_client_SOURCES = unit-test-client.c unit-test.h
 unit_test_client_LDADD = $(common_ldflags)
 
+proxy_test_server_SOURCES = proxy-test-server.c
+proxy_test_server_LDADD = $(common_ldflags)
+
+proxy_test_client_SOURCES = proxy-test-client.c unit-test.h
+proxy_test_client_LDADD = $(common_ldflags)
+
 version_SOURCES = version.c
 version_LDADD = $(common_ldflags)
 
@@ -47,7 +56,7 @@ AM_CPPFLAGS = \
     -I${top_srcdir}/src \
     -I${top_builddir}/src
 
-AM_CFLAGS = ${WARNING_CFLAGS}
+AM_CFLAGS = $(LIBMODBUSCFLAGS) $(WARNING_CFLAGS)
 
 CLEANFILES = *~ *.log
 
