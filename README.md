@@ -17,7 +17,7 @@ However, bug reports related to this variant of the library are always welcome.
 This version of `libmodbus` is primarily targeted for the Linux based operating systems.
 It may be incompatible with other operating systems, that original `libmodbus` is compatible with.
 
-The rest of content of this document is just a copy of the original README.md document
+The rest of content of this document is a copy of the original README.md document
 from the original `libmodbus`, slightly updated to refelect some changes,
 introduced by E2E. However, E2E does not provide
 any warranties of any kind about its accuracy and relevance after the changes,
