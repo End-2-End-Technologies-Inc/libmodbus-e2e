@@ -32,6 +32,7 @@ libmodbus_e2e.so.0 libmodbus-e2e0 #MINVER#
  modbus_new_rtu@Base 1.0.2
  modbus_new_tcp@Base 1.0.2
  modbus_new_tcp_pi@Base 1.0.2
+ modbus_proxy@Base 1.1.0
  modbus_read_bits@Base 1.0.2
  modbus_read_input_bits@Base 1.0.2
  modbus_read_input_registers@Base 1.0.2
